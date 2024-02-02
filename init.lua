@@ -15,6 +15,12 @@ vim.opt.hlsearch = false
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
 vim.g.mapleader="\\"
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- Horizontal split resize
+vim.keymap.set('n', '<leader>+', [[<C-w>+]], {})
+vim.keymap.set('n', '<leader>-', [[<C-w>-]], {})
 
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

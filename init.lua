@@ -11,12 +11,18 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
-vim.opt.hlsearch = false
+vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.scrolloff = 8
 vim.g.mapleader="\\"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+-- set no wrapping based on file type
+-- vim.cmd([[
+--     autocmd FileType help setlocal nowrap
+-- ]])
+-- vim.opt.wrap = false 
+
 
 -- Horizontal split resize
 vim.keymap.set('n', '<leader>+', [[<C-w>+]], {})
@@ -43,62 +49,88 @@ local plugins= {
         name = "catppuccin", 
         priority = 1000 
     },
+    
     { 
         "nvim-lua/popup.nvim" 
     },
+    
     { 
         "windwp/nvim-autopairs"
     },
+    
     { 
         "numToStr/Comment.nvim" ,
         opts = { },
         lazy = false,
     },
+    
     {
         ""
     },
+    
     { 
         "neovim/nvim-lspconfig" 
     },
+    
     { 
         "hrsh7th/cmp-nvim-lsp" 
     },
+    
     { 
         "hrsh7th/cmp-buffer" 
     },
+    
     { 
         "hrsh7th/cmp-path" 
     },
+    
     { 
         "hrsh7th/cmp-cmdline" 
     },
+    
     { 
         "hrsh7th/nvim-cmp" 
     },
+    
     {
         "github/copilot.vim"
     },
+    
     { 
         "nvim-lua/plenary.nvim" 
     },
+    
     {
         "nvim-telescope/telescope.nvim",
         tag = '0.1.5',
     },
+    
     {
         "smartpde/telescope-recent-files",
     },
+    
     {
         "nvim-telescope/telescope-file-browser.nvim",
     },
+    
     {
         "nvim-treesitter/nvim-treesitter",
     },
+    
     {
         "nvim-tree/nvim-tree.lua",
     },
+    
     {
         "nvim-tree/nvim-web-devicons",
+    },
+
+    {
+        'nvimdev/hlsearch.nvim', 
+        event = 'BufRead',
+        config = function()
+            require('hlsearch').setup()
+        end
     },
 }
 

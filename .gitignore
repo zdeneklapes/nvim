@@ -2,3 +2,5 @@
 plugin/
 *.DS_Store
 tags
+*.tar.gz
+*.tar

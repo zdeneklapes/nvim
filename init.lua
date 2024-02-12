@@ -59,6 +59,28 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Define the function to remove the quickfix item
+function RemoveQFItem()
+    local curqfidx = vim.fn.line('.') - 1
+    local qfall = vim.fn.getqflist()
+    table.remove(qfall, curqfidx + 1)
+    vim.fn.setqflist(qfall, 'r')
+    vim.cmd(tostring(curqfidx + 1) .. "cfirst")
+    vim.cmd('copen')
+end
+
+-- Create a command to call the function
+vim.cmd('command! RemoveQFItem lua RemoveQFItem()')
+
+-- Use `map <buffer>` to only map `dd` in the quickfix window
+vim.api.nvim_exec([[
+    augroup RemoveQFMapping
+        autocmd!
+        autocmd FileType qf nnoremap <buffer> dd :RemoveQFItem<CR>
+    augroup END
+]], false)
+
+vim.o.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
 local plugins= {
     {
@@ -67,6 +89,11 @@ local plugins= {
           require("auto-session").setup {
             log_level = "error",
             auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/"},
+            cwd_change_handling = { -- table: Config for handling the DirChangePre and DirChanged autocmds, can be set to nil to disable altogether
+                restore_upcoming_session = true, -- boolean: restore session for upcoming cwd on cwd change
+                pre_cwd_changed_hook = nil, -- function: This is called after auto_session code runs for the `DirChangedPre` autocmd
+                post_cwd_changed_hook = nil, -- function: This is called after auto_session code runs for the `DirChanged` autocmd
+            },
           }
         end
     },

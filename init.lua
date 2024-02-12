@@ -34,92 +34,100 @@ vim.opt.smartcase = true
 -- vim.cmd([[
 --     autocmd FileType help setlocal nowrap
 -- ]])
--- vim.opt.wrap = false 
+-- vim.opt.wrap = false
 
+-- Remove Traling whitespace
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  pattern = { "*" },
+  command = [[%s/\s\+$//e]],
+})
 
 -- Horizontal split resize
 vim.keymap.set('n', '<leader>+', [[<C-w>+]], {})
 vim.keymap.set('n', '<leader>-', [[<C-w>-]], {})
 
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
 
 local plugins= {
-    -- {
-    --     'junegunn/fzf',
-    -- },
-    { 
-        "catppuccin/nvim", 
-        name = "catppuccin", 
-        priority = 1000 
+    {
+        'rmagatti/auto-session',
+        config = function()
+          require("auto-session").setup {
+            log_level = "error",
+            auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/"},
+          }
+        end
     },
-    
-    { 
-        "nvim-lua/popup.nvim" 
+
+    {
+
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000
     },
-    
-    { 
+
+    {
+        "nvim-lua/popup.nvim"
+    },
+
+    {
         "windwp/nvim-autopairs"
     },
-    
-    { 
+
+    {
         "numToStr/Comment.nvim" ,
         opts = { },
         lazy = false,
     },
-    
+
     {
-        ""
+        "neovim/nvim-lspconfig"
     },
-    
-    { 
-        "neovim/nvim-lspconfig" 
+
+    {
+        "hrsh7th/cmp-nvim-lsp"
     },
-    
-    { 
-        "hrsh7th/cmp-nvim-lsp" 
+
+    {
+        "hrsh7th/cmp-buffer"
     },
-    
-    { 
-        "hrsh7th/cmp-buffer" 
+
+    {
+        "hrsh7th/cmp-path"
     },
-    
-    { 
-        "hrsh7th/cmp-path" 
+
+    {
+        "hrsh7th/cmp-cmdline"
     },
-    
-    { 
-        "hrsh7th/cmp-cmdline" 
+
+    {
+        "hrsh7th/nvim-cmp"
     },
-    
-    { 
-        "hrsh7th/nvim-cmp" 
-    },
-    
+
     {
         "github/copilot.vim"
     },
-    
-    { 
-        "nvim-lua/plenary.nvim" 
+
+    {
+        "nvim-lua/plenary.nvim"
     },
     {
-        'nvim-telescope/telescope-fzf-native.nvim', 
-        build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' 
+        'nvim-telescope/telescope-fzf-native.nvim',
+        build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
     },
-    
+
     -- {
     --     "nvim-telescope/telescope.nvim",
     --     tag = '0.1.5',
@@ -135,9 +143,6 @@ local plugins= {
             enabled = vim.fn.executable("make") == 1,
             config = function()
                 require("telescope").load_extension("fzf")
-                -- require('telescope').load_extension('fzf_native')
-              -- Util.on_load("telescope.nvim", function()
-              -- end)
             end,
           },
         },
@@ -168,29 +173,29 @@ local plugins= {
             require("telescope").setup {}
         end,
     },
-    
+
     {
         "smartpde/telescope-recent-files",
     },
-    
+
     {
         "nvim-telescope/telescope-file-browser.nvim",
     },
-    
+
     {
         "nvim-treesitter/nvim-treesitter",
     },
-    
+
     {
         "nvim-tree/nvim-tree.lua",
     },
-    
+
     {
         "nvim-tree/nvim-web-devicons",
     },
 
     {
-        'nvimdev/hlsearch.nvim', 
+        'nvimdev/hlsearch.nvim',
         event = 'BufRead',
         config = function()
             require('hlsearch').setup()
@@ -210,12 +215,17 @@ require("lazy").setup(plugins, opts)
 
 local builtin = require('telescope.builtin')
 -- vim.keymap.set('n', '<leader>t', , {})
-vim.keymap.set('n', '<leader>tff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>tlg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>tac', builtin.autocommands, {})
 vim.keymap.set('n', '<leader>tbb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>tht', builtin.help_tags, {})
+vim.keymap.set('n', '<leader>tbi', builtin.builtin, {})
+vim.keymap.set('n', '<leader>tcs', builtin.colorscheme, {})
 vim.keymap.set('n', '<leader>tcb', builtin.current_buffer_fuzzy_find, {})
 vim.keymap.set('n', '<leader>tcc', builtin.commands, {})
+vim.keymap.set('n', '<leader>tch', builtin.command_history, {})
+vim.keymap.set('n', '<leader>tff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>tht', builtin.help_tags, {})
+vim.keymap.set('n', '<leader>tlg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>tts', builtin.treesitter, {})
 
 require("catppuccin").setup()
 vim.cmd.colorscheme "catppuccin"

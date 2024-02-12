@@ -99,6 +99,14 @@ local plugins= {
     },
 
     {
+      'rmagatti/session-lens',
+          requires = {'rmagatti/auto-session', 'nvim-telescope/telescope.nvim'},
+          config = function()
+              require('session-lens').setup({--[[your custom config--]]})
+          end
+    },
+
+    {
 
         "catppuccin/nvim",
         name = "catppuccin",
@@ -170,6 +178,7 @@ local plugins= {
             enabled = vim.fn.executable("make") == 1,
             config = function()
                 require("telescope").load_extension("fzf")
+                require("telescope").load_extension("session-lens")
             end,
           },
         },

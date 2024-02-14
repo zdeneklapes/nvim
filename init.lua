@@ -83,6 +83,27 @@ vim.api.nvim_exec([[
 vim.o.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
 local plugins= {
+    -- TODO [NOTE] : this is not working correctly
+    -- { 'neovim/nvim-lspconfig' },
+    -- { 'hrsh7th/cmp-nvim-lsp' },
+    -- { 'hrsh7th/cmp-buffer' },
+    -- { 'hrsh7th/cmp-path' },
+    -- { 'hrsh7th/cmp-cmdline' },
+    -- { "hrsh7th/cmp-nvim-lsp" },
+    -- {
+    --     'hrsh7th/nvim-cmp',
+    --     config = function()
+    --         require('cmp').setup{
+    --             sources = {
+    --                 { name = 'nvim_lsp' },
+    --                 { name = 'buffer' },
+    --                 { name = 'path' },
+    --                 { name = 'cmdline' },
+    --             }
+    --         }
+    --     end
+    -- },
+
     {
         'rmagatti/auto-session',
         config = function()
@@ -95,6 +116,18 @@ local plugins= {
                 post_cwd_changed_hook = nil, -- function: This is called after auto_session code runs for the `DirChanged` autocmd
             },
           }
+        end
+    },
+
+    {
+        'nvim-lualine/lualine.nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
+        config = function()
+            require('lualine').setup()
+--            opts = {
+--                theme = 'catppuccino',
+--            },
+            -- return opts
         end
     },
 
@@ -125,30 +158,6 @@ local plugins= {
         "numToStr/Comment.nvim" ,
         opts = { },
         lazy = false,
-    },
-
-    {
-        "neovim/nvim-lspconfig"
-    },
-
-    {
-        "hrsh7th/cmp-nvim-lsp"
-    },
-
-    {
-        "hrsh7th/cmp-buffer"
-    },
-
-    {
-        "hrsh7th/cmp-path"
-    },
-
-    {
-        "hrsh7th/cmp-cmdline"
-    },
-
-    {
-        "hrsh7th/nvim-cmp"
     },
 
     {
@@ -267,7 +276,6 @@ require("catppuccin").setup()
 vim.cmd.colorscheme "catppuccin"
 
 -- require("nvim-lspconfig").setup()
-require("cmp").setup()
 require("nvim-autopairs").setup()
 -- require("nvim_comment").setup()
 
@@ -313,6 +321,26 @@ require'nvim-treesitter.configs'.setup({
     },
     }
 )
+
+-- require("cmp").setup()
+-- local cmp = require'cmp'
+-- cmp.setup.cmdline({ '/', '?' }, {
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = {
+--         { name = 'buffer' }
+--     }
+-- })
+--
+-- -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+-- cmp.setup.cmdline(':', {
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = cmp.config.sources(
+--         {{name = 'path' }},
+--         {{name = 'cmdline'}}
+--     )
+-- })
+
+
 
 vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrwPlugin = 1

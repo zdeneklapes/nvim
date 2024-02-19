@@ -36,6 +36,16 @@ vim.opt.smartcase = true
 -- ]])
 vim.opt.wrap = false
 
+-- Open the last file at the last cursor position
+vim.api.nvim_create_autocmd("BufReadPost", {
+	pattern = { "*" },
+	callback = function()
+		if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
+			vim.api.nvim_exec("normal! g'\"", false)
+		end
+	end,
+})
+
 -- Remove Traling whitespace
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 	pattern = { "*" },
@@ -99,7 +109,15 @@ local plugins = {
 
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		keys = { {
+			"n",
+			"<leader>e",
+			":NvimTreeToggle<CR>",
+			{ silent = true },
+		} },
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
 		config = function()
 			require("lualine").setup({})
 		end,

@@ -42,6 +42,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	callback = function()
 		if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
 			vim.api.nvim_exec("normal! g'\"", false)
+			-- vim.api.nvim_command("normal! zz")
 		end
 	end,
 })
@@ -108,13 +109,15 @@ local plugins = {
 	},
 
 	{
+		"nvim-tree/nvim-tree.lua",
+		config = function()
+			-- set mappings
+			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+		end,
+	},
+
+	{
 		"nvim-lualine/lualine.nvim",
-		keys = { {
-			"n",
-			"<leader>e",
-			":NvimTreeToggle<CR>",
-			{ silent = true },
-		} },
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
@@ -220,14 +223,6 @@ local plugins = {
 	},
 
 	{
-		"nvim-tree/nvim-tree.lua",
-	},
-
-	{
-		"nvim-tree/nvim-web-devicons",
-	},
-
-	{
 		"nvimdev/hlsearch.nvim",
 		event = "BufRead",
 		config = function()
@@ -279,12 +274,17 @@ local plugins = {
 	},
 	{
 		"folke/trouble.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
 		opts = {
 			-- your configuration comes here
 			-- or leave it empty to use the default settings
 			-- refer to the configuration section below
 		},
+	},
+	{
+		"VonHeikemen/lsp-zero.nvim",
 	},
 }
 
@@ -310,6 +310,8 @@ vim.cmd.colorscheme("tokyonight")
 require("nvim-autopairs").setup()
 
 require("nvim-treesitter.configs").setup({
+	modules = {},
+
 	-- A list of parser names, or "all" (the five listed parsers should always be installed)
 	ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
 
@@ -357,9 +359,14 @@ vim.g.loaded_netrwPlugin = 1
 
 require("neodev").setup()
 
-require("mason").setup({
-	log_level = vim.log.levels.DEBUG,
-})
+local lsp_zero = require("lsp-zero")
+lsp_zero.on_attach(function(_, bufnr)
+	-- see :help lsp-zero-keybindings
+	-- to learn the available actions
+	lsp_zero.default_keymaps({ buffer = bufnr })
+end)
+
+require("mason").setup({ log_level = vim.log.levels.DEBUG })
 local ensure_installed_packages = {
 	"pyright",
 	"tsserver",
@@ -392,6 +399,9 @@ local ensure_installed_packages = {
 require("mason-lspconfig").setup({
 	ensure_installed = ensure_installed_packages,
 	automatic_installation = true,
+	handlers = {
+		lsp_zero.default_setup,
+	},
 })
 
 require("nvim-tree").setup()
@@ -418,3 +428,11 @@ end
 for _, lang in ipairs(ensure_installed_packages) do
 	require("lspconfig")[lang].setup({})
 end
+
+local cmp = require("cmp")
+
+cmp.setup({
+	mapping = cmp.mapping.preset.insert({
+		["<CR>"] = cmp.mapping.confirm({ select = false }),
+	}),
+})

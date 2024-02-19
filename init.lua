@@ -36,13 +36,15 @@ vim.opt.smartcase = true
 -- ]])
 vim.opt.wrap = false
 
+vim.api.nvim_set_keymap("n", "gdec", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "gdef", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+
 -- Open the last file at the last cursor position
 vim.api.nvim_create_autocmd("BufReadPost", {
 	pattern = { "*" },
 	callback = function()
 		if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then
-			vim.api.nvim_exec("normal! g'\"", false)
-			-- vim.api.nvim_command("normal! zz")
+			vim.cmd("normal! g'\"")
 		end
 	end,
 })
@@ -71,15 +73,12 @@ end
 vim.cmd("command! RemoveQFItem lua RemoveQFItem()")
 
 -- Use `map <buffer>` to only map `dd` in the quickfix window
-vim.api.nvim_exec(
-	[[
+vim.cmd([[
     augroup RemoveQFMapping
         autocmd!
         autocmd FileType qf nnoremap <buffer> dd :RemoveQFItem<CR>
     augroup END
-]],
-	false
-)
+]])
 
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
@@ -303,6 +302,7 @@ vim.keymap.set("n", "<leader>tff", builtin.find_files, {})
 vim.keymap.set("n", "<leader>tht", builtin.help_tags, {})
 vim.keymap.set("n", "<leader>tlg", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>tts", builtin.treesitter, {})
+vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, {})
 
 require("catppuccin").setup()
 vim.cmd.colorscheme("tokyonight")
@@ -436,3 +436,5 @@ cmp.setup({
 		["<CR>"] = cmp.mapping.confirm({ select = false }),
 	}),
 })
+
+-- vim.api.nvim_tabpage_get_win

@@ -1,5 +1,3 @@
--- require "vim"
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -34,7 +32,7 @@ vim.opt.smartcase = true
 -- vim.cmd([[
 --     autocmd FileType help setlocal nowrap
 -- ]])
--- vim.opt.wrap = false
+vim.opt.wrap = false
 
 -- Remove Traling whitespace
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
@@ -83,26 +81,6 @@ vim.api.nvim_exec([[
 vim.o.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
 local plugins= {
-    -- TODO [NOTE] : this is not working correctly
-    -- { 'neovim/nvim-lspconfig' },
-    -- { 'hrsh7th/cmp-nvim-lsp' },
-    -- { 'hrsh7th/cmp-buffer' },
-    -- { 'hrsh7th/cmp-path' },
-    -- { 'hrsh7th/cmp-cmdline' },
-    -- { "hrsh7th/cmp-nvim-lsp" },
-    -- {
-    --     'hrsh7th/nvim-cmp',
-    --     config = function()
-    --         require('cmp').setup{
-    --             sources = {
-    --                 { name = 'nvim_lsp' },
-    --                 { name = 'buffer' },
-    --                 { name = 'path' },
-    --                 { name = 'cmdline' },
-    --             }
-    --         }
-    --     end
-    -- },
 
     {
         'rmagatti/auto-session',
@@ -133,10 +111,13 @@ local plugins= {
 
     {
       'rmagatti/session-lens',
-          requires = {'rmagatti/auto-session', 'nvim-telescope/telescope.nvim'},
-          config = function()
-              require('session-lens').setup({--[[your custom config--]]})
-          end
+      requires = {
+              'rmagatti/auto-session',
+              -- 'nvim-telescope/telescope.nvim' -- NOTE: needed but mentioned above
+      },
+      config = function()
+          require('session-lens').setup({--[[your custom config--]]})
+      end
     },
 
     {
@@ -167,15 +148,7 @@ local plugins= {
     {
         "nvim-lua/plenary.nvim"
     },
-    {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
-    },
 
-    -- {
-    --     "nvim-telescope/telescope.nvim",
-    --     tag = '0.1.5',
-    -- },
     {
         "nvim-telescope/telescope.nvim",
         cmd = "Telescope",
@@ -246,20 +219,52 @@ local plugins= {
             require('hlsearch').setup()
         end
     },
+    {
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
+    },
+    {
+        'neovim/nvim-lspconfig'
+    },
+    {-- Automatically install LSPs to stdpath for neovim
+        'williamboman/mason.nvim',
+    } ,
+    { -- ibid
+        'williamboman/mason-lspconfig.nvim',
+    },
+    { -- Lua language server configuration for nvim
+        'folke/neodev.nvim',
+    },
+    { -- Autocompletion
+        'hrsh7th/nvim-cmp',
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+            'L3MON4D3/LuaSnip',
+            'saadparwaiz1/cmp_luasnip',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+        },
+    -- TODO [NOTE] : this is not working correctly
+    --     config = function()
+    --         require('cmp').setup{
+    --             sources = {
+    --                 { name = 'nvim_lsp' },
+    --                 { name = 'buffer' },
+    --                 { name = 'path' },
+    --                 { name = 'cmdline' },
+    --             }
+    --         }
+    --     end
+    },
 }
 
-
-
 local opts = {}
-
 require("lazy").setup(plugins, opts)
 
--- require("telescope").load_extension("recent_files")
--- Map a shortcut to open the picker.
--- vim.api.nvim_set_keymap("n", "<Leader><Leader>", [[<cmd>lua require('telescope').extensions.recent_files.pick()<CR>]], {noremap = true, silent = true})
-
 local builtin = require('telescope.builtin')
--- vim.keymap.set('n', '<leader>t', , {})
 vim.keymap.set('n', '<leader>tac', builtin.autocommands, {})
 vim.keymap.set('n', '<leader>tbb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>tbi', builtin.builtin, {})
@@ -273,11 +278,9 @@ vim.keymap.set('n', '<leader>tlg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>tts', builtin.treesitter, {})
 
 require("catppuccin").setup()
-vim.cmd.colorscheme "catppuccin"
+vim.cmd.colorscheme "tokyonight"
 
--- require("nvim-lspconfig").setup()
 require("nvim-autopairs").setup()
--- require("nvim_comment").setup()
 
 require'nvim-treesitter.configs'.setup({
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
@@ -294,7 +297,8 @@ require'nvim-treesitter.configs'.setup({
     ignore_install = { "javascript" },
 
     ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-    -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+    -- parser_install_dir = "/some/path/to/store/parsers",
+    -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
 
     highlight = {
     enable = true,
@@ -305,7 +309,7 @@ require'nvim-treesitter.configs'.setup({
     -- list of language that will be disabled
     disable = { "c", "rust" },
     -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-    disable = function(lang, buf)
+    disable = function(_, buf)
         local max_filesize = 100 * 1024 -- 100 KB
         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
         if ok and stats and stats.size > max_filesize then
@@ -322,26 +326,52 @@ require'nvim-treesitter.configs'.setup({
     }
 )
 
--- require("cmp").setup()
--- local cmp = require'cmp'
--- cmp.setup.cmdline({ '/', '?' }, {
---     mapping = cmp.mapping.preset.cmdline(),
---     sources = {
---         { name = 'buffer' }
---     }
--- })
---
--- -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
--- cmp.setup.cmdline(':', {
---     mapping = cmp.mapping.preset.cmdline(),
---     sources = cmp.config.sources(
---         {{name = 'path' }},
---         {{name = 'cmdline'}}
---     )
--- })
-
-
 
 vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrwPlugin = 1
+
+require("mason").setup()
+require("mason-lspconfig").setup({
+    ensure_installed = {
+        "pyright",
+        "tsserver",
+        "lua_ls",
+        "jsonls",
+        "yamlls",
+        "bashls",
+        "dockerls",
+        "gopls",
+        "html",
+        "cssls",
+        "vimls",
+        "clangd",
+        "rust_analyzer",
+        "jdtls",
+        "terraformls",
+        "svelte",
+        "tailwindcss",
+        "graphql",
+        "phpactor",
+        "intelephense",
+        "angularls",
+        "denols",
+        "solargraph",
+        "sqlls",
+        "stylelint_lsp",
+        "vuels",
+        "zls",
+    },
+    automatic_installation = true,
+})
+
 require("nvim-tree").setup()
+
+-- lspconfig setup for the language servers
+-- TODO[NOTE] : setup{} or setup({}) has to be used instead of setup() as it is a function call
+require("lspconfig")["pyright"].setup({})
+require("lspconfig")["tsserver"].setup({})
+require("lspconfig")["lua_ls"].setup({})
+require("lspconfig")["jsonls"].setup({})
+
+
+-- require("neodev").setup()

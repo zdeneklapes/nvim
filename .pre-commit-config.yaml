@@ -50,4 +50,8 @@ repos:
     rev: v1.0.0
     hooks:
       - id: luacheck
-        args: [ '--config', '.luacheckrc' ]
+
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v0.20.0
+    hooks:
+      - id: stylua # or stylua-system / stylua-github

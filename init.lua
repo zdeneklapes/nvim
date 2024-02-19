@@ -339,37 +339,40 @@ vim.g.loaded_netrwPlugin = 1
 
 require("neodev").setup()
 
-require("mason").setup()
+require("mason").setup({
+	log_level = vim.log.levels.DEBUG,
+})
+local ensure_installed_packages = {
+	"pyright",
+	"tsserver",
+	"lua_ls",
+	"jsonls",
+	"yamlls",
+	"bashls",
+	"dockerls",
+	"gopls",
+	"html",
+	"cssls",
+	"vimls",
+	"clangd",
+	"rust_analyzer",
+	"jdtls",
+	"terraformls",
+	"svelte",
+	"tailwindcss",
+	"graphql",
+	"phpactor",
+	"intelephense",
+	"angularls",
+	"denols",
+	"solargraph",
+	"sqlls",
+	"stylelint_lsp",
+	"vuels",
+	"zls",
+}
 require("mason-lspconfig").setup({
-	ensure_installed = {
-		"pyright",
-		"tsserver",
-		"lua_ls",
-		"jsonls",
-		"yamlls",
-		"bashls",
-		"dockerls",
-		"gopls",
-		"html",
-		"cssls",
-		"vimls",
-		"clangd",
-		"rust_analyzer",
-		"jdtls",
-		"terraformls",
-		"svelte",
-		"tailwindcss",
-		"graphql",
-		"phpactor",
-		"intelephense",
-		"angularls",
-		"denols",
-		"solargraph",
-		"sqlls",
-		"stylelint_lsp",
-		"vuels",
-		"zls",
-	},
+	ensure_installed = ensure_installed_packages,
 	automatic_installation = true,
 })
 
@@ -377,8 +380,6 @@ require("nvim-tree").setup()
 
 -- lspconfig setup for the language servers
 -- TODO[NOTE] : setup{} or setup({}) has to be used instead of setup() as it is a function call
-require("lspconfig")["pyright"].setup({})
-require("lspconfig")["tsserver"].setup({})
 require("lspconfig")["lua_ls"].setup({
 	settings = {
 		Lua = {
@@ -388,4 +389,14 @@ require("lspconfig")["lua_ls"].setup({
 		},
 	},
 })
-require("lspconfig")["jsonls"].setup({})
+
+-- Load the language servers
+local pkgs = ensure_installed_packages
+for i, lang in ipairs(pkgs) do
+	if lang == "lua_ls" then
+		table.remove(pkgs, i)
+	end
+end
+for _, lang in ipairs(ensure_installed_packages) do
+	require("lspconfig")[lang].setup({})
+end

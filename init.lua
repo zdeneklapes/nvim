@@ -36,9 +36,6 @@ vim.opt.smartcase = true
 -- ]])
 vim.opt.wrap = false
 
-vim.api.nvim_set_keymap("n", "gdec", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "gdef", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
-
 -- Open the last file at the last cursor position
 vim.api.nvim_create_autocmd("BufReadPost", {
 	pattern = { "*" },
@@ -56,8 +53,8 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 })
 
 -- Horizontal split resize
-vim.keymap.set("n", "<leader>+", [[<C-w>+]], {})
-vim.keymap.set("n", "<leader>-", [[<C-w>-]], {})
+vim.keymap.set("n", "<leader>+", [[<C-w>+]], { desc = "Increase horizontal split size" })
+vim.keymap.set("n", "<leader>-", [[<C-w>-]], { desc = "Decrease horizontal split size" })
 
 -- Define the function to remove the quickfix item
 RemoveQFItem = function() -- luacheck: ignore
@@ -169,7 +166,10 @@ local plugins = {
 	{
 		"junegunn/fzf",
 		config = function()
-			vim.fn["fzf#install"]()
+			-- Only if fzf is not installed, install it!
+			if vim.fn.executable("fzf") == 0 then
+				vim.fn["fzf#install"]()
+			end
 		end,
 	},
 
@@ -250,6 +250,20 @@ local plugins = {
 	{ -- ibid
 		"williamboman/mason-lspconfig.nvim",
 	},
+	{
+		"jay-babu/mason-null-ls.nvim",
+		event = {
+			"BufReadPre",
+			"BufNewFile",
+		},
+		dependencies = {
+			"williamboman/mason.nvim",
+			"nvimtools/none-ls.nvim",
+		},
+		-- config = function()
+		--     require("your.null-ls.config") -- require your null-ls config here (example below)
+		-- end,
+	},
 	{ -- Lua language server configuration for nvim
 		"folke/neodev.nvim",
 	},
@@ -329,19 +343,24 @@ local opts = {}
 require("lazy").setup(plugins, opts)
 
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>tac", builtin.autocommands, {})
-vim.keymap.set("n", "<leader>tbb", builtin.buffers, {})
-vim.keymap.set("n", "<leader>tbi", builtin.builtin, {})
-vim.keymap.set("n", "<leader>tcs", builtin.colorscheme, {})
-vim.keymap.set("n", "<leader>tcb", builtin.current_buffer_fuzzy_find, {})
-vim.keymap.set("n", "<leader>tcc", builtin.commands, {})
-vim.keymap.set("n", "<leader>tch", builtin.command_history, {})
-vim.keymap.set("n", "<leader>tff", builtin.find_files, {})
-vim.keymap.set("n", "<leader>tht", builtin.help_tags, {})
-vim.keymap.set("n", "<leader>tlg", builtin.live_grep, {})
-vim.keymap.set("n", "<leader>tts", builtin.treesitter, {})
-vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, {})
-vim.keymap.set("n", "<leader>ttt", ":Telescope telescope-tabs list_tabs<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>tac", builtin.autocommands, { desc = "Telescope autocommands" })
+vim.keymap.set("n", "<leader>tbb", builtin.buffers, { desc = "Telescope buffers" })
+vim.keymap.set("n", "<leader>tbi", builtin.builtin, { desc = "Telescope builtin" })
+vim.keymap.set("n", "<leader>tcs", builtin.colorscheme, { desc = "Telescope colorscheme" })
+vim.keymap.set("n", "<leader>tcb", builtin.current_buffer_fuzzy_find, { desc = "Telescope current buffer" })
+vim.keymap.set("n", "<leader>tcc", builtin.commands, { desc = "Telescope commands" })
+vim.keymap.set("n", "<leader>tch", builtin.command_history, { desc = "Telescope command history" })
+vim.keymap.set("n", "<leader>tff", builtin.find_files, { desc = "Telescope find files" })
+vim.keymap.set("n", "<leader>tht", builtin.help_tags, { desc = "Telescope help tags" })
+vim.keymap.set("n", "<leader>tlg", builtin.live_grep, { desc = "Telescope live grep" })
+vim.keymap.set("n", "<leader>tts", builtin.treesitter, { desc = "Telescope treesitter" })
+vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, { desc = "Telescope diagnostics" })
+vim.keymap.set(
+	"n",
+	"<leader>ttt",
+	":Telescope telescope-tabs list_tabs<CR>",
+	{ noremap = true, silent = true, desc = "Telescope telescope-tabs list_tabs" }
+)
 
 require("catppuccin").setup()
 
@@ -399,23 +418,18 @@ require("nvim-treesitter.configs").setup({
 	},
 })
 
+require("nvim-tree").setup()
+
 vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrwPlugin = 1
-
 require("neodev").setup()
-
-local lsp_zero = require("lsp-zero")
-lsp_zero.on_attach(function(_, bufnr)
-	-- see :help lsp-zero-keybindings
-	-- to learn the available actions
-	lsp_zero.default_keymaps({ buffer = bufnr })
-end)
 
 require("mason").setup({ log_level = vim.log.levels.DEBUG })
 local ensure_installed_packages = {
 	"pyright",
 	"tsserver",
 	"lua_ls",
+	-- "lua",
 	"jsonls",
 	"yamlls",
 	"bashls",
@@ -441,6 +455,8 @@ local ensure_installed_packages = {
 	"vuels",
 	"zls",
 }
+
+local lsp_zero = require("lsp-zero")
 require("mason-lspconfig").setup({
 	ensure_installed = ensure_installed_packages,
 	automatic_installation = true,
@@ -449,11 +465,69 @@ require("mason-lspconfig").setup({
 	},
 })
 
-require("nvim-tree").setup()
-
 -- lspconfig setup for the language servers
 -- TODO[NOTE] : setup{} or setup({}) has to be used instead of setup() as it is a function call
-require("lspconfig")["lua_ls"].setup({
+lsp_zero.on_attach(function(_, bufnr)
+	-- see :help lsp-zero-keybindings
+	-- to learn the available actions
+	lsp_zero.default_keymaps({ buffer = bufnr })
+	vim.keymap.set(
+		"n",
+		"<leader>lbdf",
+		"<cmd>lua vim.lsp.buf.definition()<CR>",
+		{ noremap = true, silent = true, desc = "Goto Definition" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbdc",
+		"<cmd>lua vim.lsp.buf.declaration()<CR>",
+		{ noremap = true, silent = true, desc = "Goto Declaration" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbrf",
+		"<cmd>lua vim.lsp.buf.references()<CR>",
+		{ noremap = true, silent = true, desc = "Goto References" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbrn",
+		"<cmd>lua vim.lsp.buf.rename()<CR>",
+		{ noremap = true, silent = true, desc = "Rename" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbhh",
+		"<cmd>lua vim.lsp.buf.hover()<CR>",
+		{ noremap = true, silent = true, desc = "Hover" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbca",
+		"<cmd>lua vim.lsp.buf.code_action()<CR>",
+		{ noremap = true, silent = true, desc = "Code Action" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbsh",
+		"<cmd>lua vim.lsp.buf.signature_help()<CR>",
+		{ noremap = true, silent = true, desc = "Signature Help" }
+	)
+	vim.keymap.set(
+		"n",
+		"<leader>lbtd",
+		"<cmd>lua vim.lsp.buf.type_definition()<CR>",
+		{ noremap = true, silent = true, desc = "Type Definition" }
+	)
+end)
+-- lsp_zero.on_attach(function(_, bufnr)
+-- 	-- see :help lsp-zero-keybindings
+-- 	-- to learn the available actions
+-- 	lsp_zero.default_keymaps({ buffer = bufnr })
+-- end)
+
+local lspconfig = require("lspconfig")
+lspconfig["lua_ls"].setup({
 	settings = {
 		Lua = {
 			diagnostics = {
@@ -471,7 +545,7 @@ for i, lang in ipairs(pkgs) do
 	end
 end
 for _, lang in ipairs(ensure_installed_packages) do
-	require("lspconfig")[lang].setup({})
+	lspconfig[lang].setup({})
 end
 
 local cmp = require("cmp")
@@ -482,4 +556,7 @@ cmp.setup({
 	}),
 })
 
--- vim.api.nvim_tabpage_get_win
+require("mason-null-ls").setup({
+	ensure_installed = { "stylua", "jq", "lua" },
+	automatic_installation = true,
+})

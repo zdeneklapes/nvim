@@ -289,12 +289,39 @@ local plugins = {
 			-- refer to the configuration section below
 		},
 	},
+
 	{
 		"VonHeikemen/lsp-zero.nvim",
 	},
+
 	{
 		"kevinhwang91/nvim-bqf",
 		ft = "qf",
+	},
+
+	{
+		"LukasPietzschmann/telescope-tabs",
+		config = function()
+			require("telescope").load_extension("telescope-tabs")
+			require("telescope-tabs").setup({
+				-- Your custom config :^)
+			})
+		end,
+		dependencies = { "nvim-telescope/telescope.nvim" },
+	},
+
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		init = function()
+			vim.o.timeout = true
+			vim.o.timeoutlen = 300
+		end,
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
 	},
 }
 
@@ -314,9 +341,16 @@ vim.keymap.set("n", "<leader>tht", builtin.help_tags, {})
 vim.keymap.set("n", "<leader>tlg", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>tts", builtin.treesitter, {})
 vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, {})
+vim.keymap.set("n", "<leader>ttt", ":Telescope telescope-tabs list_tabs<CR>", { noremap = true, silent = true })
 
 require("catppuccin").setup()
-vim.cmd.colorscheme("tokyonight")
+
+local function setup_colorscheme()
+	-- All file types tokyonight, but yaml tokyonight-moon
+	vim.api.nvim_command("autocmd BufEnter * colorscheme tokyonight")
+	vim.api.nvim_command("autocmd BufEnter *.yaml colorscheme tokyonight-moon")
+end
+setup_colorscheme()
 
 require("nvim-autopairs").setup()
 

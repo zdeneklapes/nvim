@@ -30,6 +30,8 @@ vim.opt.scrolloff = 8
 vim.g.mapleader = "\\"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
+vim.cmd("set clipboard+=unnamedplus") -- ensure yanking to system clipboard
+
 -- set no wrapping based on file type
 -- vim.cmd([[
 --     autocmd FileType help setlocal nowrap

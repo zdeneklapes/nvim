@@ -60,7 +60,7 @@ vim.keymap.set("n", "<leader>+", [[<C-w>+]], {})
 vim.keymap.set("n", "<leader>-", [[<C-w>-]], {})
 
 -- Define the function to remove the quickfix item
-local RemoveQFItem = function() -- luacheck: ignore
+RemoveQFItem = function() -- luacheck: ignore
 	local curqfidx = vim.fn.line(".") - 1
 	local qfall = vim.fn.getqflist()
 	table.remove(qfall, curqfidx + 1)
@@ -164,6 +164,13 @@ local plugins = {
 
 	{
 		"nvim-lua/plenary.nvim",
+	},
+
+	{
+		"junegunn/fzf",
+		config = function()
+			vim.fn["fzf#install"]()
+		end,
 	},
 
 	{
@@ -284,6 +291,10 @@ local plugins = {
 	},
 	{
 		"VonHeikemen/lsp-zero.nvim",
+	},
+	{
+		"kevinhwang91/nvim-bqf",
+		ft = "qf",
 	},
 }
 

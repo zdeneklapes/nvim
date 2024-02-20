@@ -32,11 +32,26 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.cmd("set clipboard+=unnamedplus") -- ensure yanking to system clipboard
 
+-- get python path from which
+--python_path_exe = system('which python3')
+--vim.cmd("let g:python3_host_prog = )")
+
 -- set no wrapping based on file type
 -- vim.cmd([[
 --     autocmd FileType help setlocal nowrap
 -- ]])
 vim.opt.wrap = false
+
+-- Neovim for Python and Node.js installed successfully!
+if vim.fn.executable("pip3") == 0 then
+	local python_install_cmd = "pip install pynvim"
+	os.execute(python_install_cmd)
+end
+
+if vim.fn.executable("npm") == 0 then
+	local node_install_cmd = "npm install -g neovim"
+	os.execute(node_install_cmd)
+end
 
 -- Open the last file at the last cursor position
 vim.api.nvim_create_autocmd("BufReadPost", {
@@ -110,8 +125,9 @@ local plugins = {
 		"nvim-tree/nvim-tree.lua",
 		config = function()
 			-- set mappings
-			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true, desc = "Toggle NvimTree" })
 		end,
+		-- auto_clean = true,
 	},
 
 	{
@@ -173,6 +189,10 @@ local plugins = {
 				vim.fn["fzf#install"]()
 			end
 		end,
+	},
+
+	{
+		"rmagatti/session-lens",
 	},
 
 	{
@@ -367,9 +387,10 @@ vim.keymap.set(
 require("catppuccin").setup()
 
 local function setup_colorscheme()
-	-- All file types tokyonight, but yaml tokyonight-moon
+	-- All file types tokyonight
 	vim.api.nvim_command("autocmd BufEnter * colorscheme tokyonight")
-	vim.api.nvim_command("autocmd BufEnter *.yaml colorscheme tokyonight-moon")
+	-- yaml or yml set tokyonight-moon
+	vim.api.nvim_command("autocmd BufEnter *.yaml,*.yml colorscheme tokyonight-moon")
 end
 setup_colorscheme()
 
@@ -419,8 +440,6 @@ require("nvim-treesitter.configs").setup({
 		additional_vim_regex_highlighting = false,
 	},
 })
-
-require("nvim-tree").setup()
 
 vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrwPlugin = 1

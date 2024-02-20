@@ -291,6 +291,7 @@ local plugins = {
 	},
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
+		-- "hrsh7th/nvim-compe",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"L3MON4D3/LuaSnip",
@@ -435,6 +436,15 @@ require("nvim-treesitter.configs").setup({
 		"dockerfile",
 		"bash",
 	},
+	-- incremental_selection = {
+	--   enable = true,
+	--   keymaps = {
+	--     init_selection = "<CR>",
+	--     node_incremental = "<CR>",
+	--     scope_incremental = "<S-CR>",
+	--     node_decremental = "<BS>",
+	--   },
+	-- },
 	-- sync_install = false,
 	-- auto_install = true,
 	-- ignore_install = { "javascript" },
@@ -584,11 +594,19 @@ for _, lang in ipairs(ensure_installed_packages) do
 end
 
 local cmp = require("cmp")
-
 cmp.setup({
-	mapping = cmp.mapping.preset.insert({
-		["<CR>"] = cmp.mapping.confirm({ select = false }),
-	}),
+	-- mapping = cmp.mapping.preset.insert({
+	-- 	["<Tab>"] = cmp.mapping.confirm({ select = true }),
+	-- }),
+	mapping = {
+		["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-d>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-e>"] = cmp.mapping.close(),
+		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Must be here otherwise it will not work and error: 5108 and 5100
+	},
 })
 
 require("mason-null-ls").setup({

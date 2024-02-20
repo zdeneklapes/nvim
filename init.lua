@@ -365,6 +365,8 @@ local plugins = {
 local opts = {}
 require("lazy").setup(plugins, opts)
 
+require("nvim-tree").setup({})
+
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>tac", builtin.autocommands, { desc = "Telescope autocommands" })
 vim.keymap.set("n", "<leader>tbb", builtin.buffers, { desc = "Telescope buffers" })

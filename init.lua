@@ -97,6 +97,22 @@ vim.cmd([[
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
 local plugins = {
+	{ -- Nice dark mode preview for markdown
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		build = "cd app && yarn install",
+		init = function()
+			vim.g.mkdp_filetypes = { "markdown" }
+		end,
+		ft = { "markdown" },
+	},
+
+	{
+		"briones-gabriel/darcula-solid.nvim",
+		dependencies = {
+			"rktjmp/lush.nvim",
+		},
+	},
 
 	{
 		"rmagatti/auto-session",
@@ -289,6 +305,7 @@ local plugins = {
 	{ -- Lua language server configuration for nvim
 		"folke/neodev.nvim",
 	},
+
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
 		-- "hrsh7th/nvim-compe",
@@ -609,6 +626,25 @@ cmp.setup({
 		["<C-e>"] = cmp.mapping.close(),
 		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Must be here otherwise it will not work and error: 5108 and 5100
 	},
+	sources = {
+		{ name = "nvim_lsp" },
+		{ name = "buffer" },
+		{ name = "path" },
+		-- { name = 'cmdline' },
+	},
+})
+cmp.setup.cmdline(":", {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = cmp.config.sources({
+		{ name = "path" },
+	}, {
+		{
+			name = "cmdline",
+			option = {
+				ignore_cmds = { "Man", "!" },
+			},
+		},
+	}),
 })
 
 require("mason-null-ls").setup({

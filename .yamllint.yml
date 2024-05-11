@@ -1,29 +1,30 @@
+---
 extends: default
 
 
 yaml-files:
-  - '*.yaml'
-  - '*.yml'
-  - '.yamllint'
+    - '*.yaml'
+    - '*.yml'
+    - .yamllint
 
 rules:
-  braces:
-    max-spaces-inside: 1
-    level: error
-  brackets:
-    max-spaces-inside: 1
-    level: error
-  comments: disable
-  comments-indentation: disable
-  document-start: disable
-  line-length: disable
-  truthy:
-    level: warning
-    allowed-values:
-      - 'true'
-      - 'false'
-      - 'yes'
-      - 'no'
+    braces:
+        max-spaces-inside: 1
+        level: error
+    brackets:
+        max-spaces-inside: 1
+        level: error
+    comments: disable
+    comments-indentation: disable
+    document-start: disable
+    line-length: disable
+    truthy:
+        level: warning
+        allowed-values:
+            - 'true'
+            - 'false'
+            - 'yes'
+            - 'no'
 
 
 #  anchors: enable

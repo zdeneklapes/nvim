@@ -190,9 +190,35 @@ local plugins = {
     lazy = false,
   },
 
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --     config = function()
+  --       require("copilot").setup({
+  --           -- suggestion = { enabled = false },
+  --           -- panel = { enabled = false },
+  --       })
+  --     end,
+  -- },
+
   {
     "github/copilot.vim",
   },
+
+  -- {
+  --   "zbirenbaum/copilot-cmp",
+  --   config = function ()
+  --     require("copilot_cmp").setup({
+  --         sources = {
+  --           -- Copilot Source
+  --           { name = "copilot", group_index = 2 },
+  --           -- Other Sources
+  --           { name = "nvim_lsp", group_index = 2 },
+  --           { name = "path", group_index = 2 },
+  --           { name = "luasnip", group_index = 2 },
+  --         },
+  --     })
+  --   end
+  -- },
 
   {
     "nvim-lua/plenary.nvim",
@@ -386,12 +412,88 @@ local plugins = {
   {
     "dyng/ctrlsf.vim",
   },
+
+  {
+    "mfussenegger/nvim-lint",
+    config = function()
+      local lint = require("lint")
+      lint.linters_by_ft = {
+        python = { "flake8" },
+        lua = { "luacheck" },
+        vim = { "vint" },
+        sh = { "shellcheck" },
+        markdown = { "markdownlint" },
+        yaml = { "yamllint" },
+        json = { "jsonlint" },
+        html = { "tidy" },
+        css = { "stylelint" },
+        javascript = { "eslint" },
+        typescript = { "eslint" },
+        svelte = { "eslint" },
+        php = { "phpcs" },
+        go = { "golangci-lint" },
+        rust = { "cargo" },
+        graphql = { "graphql" },
+        dockerfile = { "hadolint" },
+        bash = { "shellcheck" },
+      }
+      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+      vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+        group = lint_augroup,
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+    end,
+  },
+
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    config = function()
+      require("mason-tool-installer").setup({
+        ensure_installed = {
+          -- you can pin a tool to a particular version
+          { "golangci-lint", version = "v1.47.0" },
+          -- you can turn off/on auto_update per tool
+          { "bash-language-server", auto_update = true },
+          "lua-language-server",
+          "vim-language-server",
+          "gopls",
+          "stylua",
+          "shellcheck",
+          "editorconfig-checker",
+          "gofumpt",
+          "golines",
+          "gomodifytags",
+          "gotests",
+          "impl",
+          "json-to-struct",
+          "luacheck",
+          "misspell",
+          "revive",
+          "shellcheck",
+          "shfmt",
+          "staticcheck",
+          "vint",
+        },
+        integrations = {
+          ["mason-lspconfig"] = true,
+          ["mason-null-ls"] = true,
+          ["mason-nvim-dap"] = true,
+        },
+      })
+    end,
+  },
 }
 
 local opts = {}
 require("lazy").setup(plugins, opts)
 
-require("nvim-tree").setup({})
+require("nvim-tree").setup({
+  filesystem_watchers = {
+    enable = true,
+  },
+})
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>tac", builtin.autocommands, { desc = "Telescope autocommands" })
@@ -498,47 +600,48 @@ vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
 vim.g.loaded_netrwPlugin = 1
 require("neodev").setup()
 
+require("mason").setup({ log_level = vim.log.lev })
 require("mason").setup({ log_level = vim.log.levels.DEBUG })
-local ensure_installed_packages = {
-  -- "pyright",
-  -- "tsserver",
-  -- "lua_ls",
-  -- "lua",
-  -- "jsonls",
-  -- "yamlls",
-  -- "bashls",
-  -- "dockerls",
-  -- "gopls",
-  -- "html",
-  -- "cssls",
-  -- "vimls",
-  -- "clangd",
-  -- "rust_analyzer",
-  -- "jdtls",
-  -- "terraformls",
-  -- "svelte",
-  -- "tailwindcss",
-  -- "graphql",
-  -- "phpactor",
-  -- "intelephense",
-  -- "angularls",
-  -- "denols",
-  -- "solargraph",
-  -- "sqlls",
-  -- "stylelint_lsp",
-  -- "vuels",
-  -- "zls",
-  -- "hls",
-}
+-- local ensure_installed_packages = {
+-- "pyright",
+-- "tsserver",
+-- "lua_ls",
+-- "lua",
+-- "jsonls",
+-- "yamlls",
+-- "bashls",
+-- "dockerls",
+-- "gopls",
+-- "html",
+-- "cssls",
+-- "vimls",
+-- "clangd",
+-- "rust_analyzer",
+-- "jdtls",
+-- "terraformls",
+-- "svelte",
+-- "tailwindcss",
+-- "graphql",
+-- "phpactor",
+-- "intelephense",
+-- "angularls",
+-- "denols",
+-- "solargraph",
+-- "sqlls",
+-- "stylelint_lsp",
+-- "vuels",
+-- "zls",
+-- "hls",
+-- }
 
 local lsp_zero = require("lsp-zero")
-require("mason-lspconfig").setup({
-  ensure_installed = ensure_installed_packages,
-  automatic_installation = true,
-  handlers = {
-    lsp_zero.default_setup,
-  },
-})
+-- require("mason-lspconfig").setup({
+--   ensure_installed = ensure_installed_packages,
+--   automatic_installation = true,
+--   handlers = {
+--     lsp_zero.default_setup,
+--   },
+-- })
 
 -- lspconfig setup for the language servers
 -- TODO[NOTE] : setup{} or setup({}) has to be used instead of setup() as it is a function call
@@ -573,15 +676,15 @@ lspconfig["lua_ls"].setup({
 })
 
 -- Load the language servers
-local pkgs = ensure_installed_packages
-for i, lang in ipairs(pkgs) do
-  if lang == "lua_ls" then
-    table.remove(pkgs, i)
-  end
-end
-for _, lang in ipairs(ensure_installed_packages) do
-  lspconfig[lang].setup({})
-end
+-- local pkgs = ensure_installed_packages
+-- for i, lang in ipairs(pkgs) do
+--   if lang == "lua_ls" then
+--     table.remove(pkgs, i)
+--   end
+-- end
+-- for _, lang in ipairs(ensure_installed_packages) do
+--   lspconfig[lang].setup({})
+-- end
 
 local cmp = require("cmp")
 cmp.setup({

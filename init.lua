@@ -393,7 +393,7 @@ local plugins = {
 					{ "bash-language-server", auto_update = true },
 					"lua-language-server",
 					"vim-language-server",
-					"gopls",
+					-- "gopls",
 					"stylua",
 					"shellcheck",
 					"editorconfig-checker",
@@ -408,7 +408,7 @@ local plugins = {
 					"revive",
 					"shellcheck",
 					"shfmt",
-					"staticcheck",
+					-- "staticcheck",
 					"vint",
 				},
 				integrations = {

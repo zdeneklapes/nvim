@@ -61,6 +61,9 @@ local plugins = {
 				filesystem_watchers = {
 					enable = true,
 				},
+				git = {
+					enable = false, -- This insure that nvim-tree resheshes all, even if the files are ignored by .gitignore
+				},
 			})
 			-- set mappings
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true, desc = "Toggle NvimTree" })

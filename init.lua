@@ -85,7 +85,7 @@ local plugins = {
 		"rmagatti/session-lens",
 		requires = {
 			"rmagatti/auto-session",
-			-- 'nvim-telescope/telescope.nvim' -- NOTE: needed but mentioned above
+			"nvim-telescope/telescope.nvim", -- NOTE: needed but mentioned above
 		},
 		config = function()
 			require("session-lens").setup({--[[your custom config--]]
@@ -178,6 +178,24 @@ local plugins = {
 					require("telescope").load_extension("session-lens")
 				end,
 			},
+
+			{
+				"smartpde/telescope-recent-files",
+			},
+
+			{
+				"nvim-telescope/telescope-file-browser.nvim",
+			},
+
+			{
+				"LukasPietzschmann/telescope-tabs",
+				config = function()
+					local telescope = require("telescope")
+					telescope.load_extension("telescope-tabs")
+					require("telescope-tabs").setup()
+				end,
+				dependencies = { "nvim-telescope/telescope.nvim" },
+			},
 		},
 		setup = function()
 			-- Install ripgrep based on the operating system
@@ -203,16 +221,30 @@ local plugins = {
 			vim.cmd("packadd plenary.nvim")
 			vim.cmd("packadd popup.nvim")
 			vim.cmd("packadd telescope.nvim")
-			require("telescope").setup({})
 		end,
-	},
+		config = function()
+			local telescope = require("telescope")
+			telescope.setup({
+				find_files = {
+					hidden = true,
+				},
+			})
 
-	{
-		"smartpde/telescope-recent-files",
-	},
-
-	{
-		"nvim-telescope/telescope-file-browser.nvim",
+			local builtin = require("telescope.builtin")
+			vim.keymap.set("n", "<leader>tac", builtin.autocommands, { desc = "Telescope autocommands" })
+			vim.keymap.set("n", "<leader>tbb", builtin.buffers, { desc = "Telescope buffers" })
+			vim.keymap.set("n", "<leader>tbi", builtin.builtin, { desc = "Telescope builtin" })
+			vim.keymap.set("n", "<leader>tcs", builtin.colorscheme, { desc = "Telescope colorscheme" })
+			vim.keymap.set("n", "<leader>tcb", builtin.current_buffer_fuzzy_find, { desc = "Telescope current buffer" })
+			vim.keymap.set("n", "<leader>tcc", builtin.commands, { desc = "Telescope commands" })
+			vim.keymap.set("n", "<leader>tch", builtin.command_history, { desc = "Telescope command history" })
+			vim.keymap.set("n", "<leader>tff", builtin.find_files, { desc = "Telescope find files" })
+			vim.keymap.set("n", "<leader>tht", builtin.help_tags, { desc = "Telescope help tags" })
+			vim.keymap.set("n", "<leader>tlg", builtin.live_grep, { desc = "Telescope live grep" })
+			vim.keymap.set("n", "<leader>tgs", builtin.grep_string, { desc = "Telescope grep string" })
+			vim.keymap.set("n", "<leader>tts", builtin.treesitter, { desc = "Telescope treesitter" })
+			vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, { desc = "Telescope diagnostics" })
+		end,
 	},
 
 	{
@@ -316,17 +348,6 @@ local plugins = {
 	},
 
 	{
-		"LukasPietzschmann/telescope-tabs",
-		config = function()
-			require("telescope").load_extension("telescope-tabs")
-			require("telescope-tabs").setup({
-				-- Your custom config :^)
-			})
-		end,
-		dependencies = { "nvim-telescope/telescope.nvim" },
-	},
-
-	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 		init = function()
@@ -419,24 +440,17 @@ local plugins = {
 			})
 		end,
 	},
+
+	{
+		"lewis6991/gitsigns.nvim",
+		config = function()
+			require("gitsigns").setup()
+		end,
+	},
 }
 
 local opts = {}
 require("lazy").setup(plugins, opts)
-
-local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>tac", builtin.autocommands, { desc = "Telescope autocommands" })
-vim.keymap.set("n", "<leader>tbb", builtin.buffers, { desc = "Telescope buffers" })
-vim.keymap.set("n", "<leader>tbi", builtin.builtin, { desc = "Telescope builtin" })
-vim.keymap.set("n", "<leader>tcs", builtin.colorscheme, { desc = "Telescope colorscheme" })
-vim.keymap.set("n", "<leader>tcb", builtin.current_buffer_fuzzy_find, { desc = "Telescope current buffer" })
-vim.keymap.set("n", "<leader>tcc", builtin.commands, { desc = "Telescope commands" })
-vim.keymap.set("n", "<leader>tch", builtin.command_history, { desc = "Telescope command history" })
-vim.keymap.set("n", "<leader>tff", builtin.find_files, { desc = "Telescope find files" })
-vim.keymap.set("n", "<leader>tht", builtin.help_tags, { desc = "Telescope help tags" })
-vim.keymap.set("n", "<leader>tlg", builtin.live_grep, { desc = "Telescope live grep" })
-vim.keymap.set("n", "<leader>tts", builtin.treesitter, { desc = "Telescope treesitter" })
-vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, { desc = "Telescope diagnostics" })
 -- vim.keymap.set(
 -- 	"n",
 -- 	"<leader>ttt",

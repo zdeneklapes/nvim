@@ -665,7 +665,13 @@ vim.opt.scrolloff = 8
 vim.g.mapleader = "\\"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.cmd("set clipboard+=unnamedplus") -- ensure yanking to system clipboard
+
+-- TODO [FIX]: ensure yanking to system clipboard (on ubuntu not working)
+vim.cmd("set clipboard+=unnamedplus")
+vim.cmd("vnoremap <leader>y \"+y")
+vim.cmd("nnoremap <leader>Y \"+yg_")
+vim.cmd("nnoremap <leader>y \"+y")
+vim.cmd("nnoremap <leader>yy \"+yy")
 
 -- get python path from which
 --python_path_exe = system('which python3')

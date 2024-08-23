@@ -447,6 +447,29 @@ local plugins = {
 			require("gitsigns").setup()
 		end,
 	},
+
+	{
+		"gennaro-tedesco/nvim-possession",
+		dependencies = {
+			"ibhagwan/fzf-lua",
+		},
+		config = true,
+		init = function()
+			local possession = require("nvim-possession")
+			vim.keymap.set("n", "<leader>sl", function()
+				possession.list()
+			end)
+			vim.keymap.set("n", "<leader>sn", function()
+				possession.new()
+			end)
+			vim.keymap.set("n", "<leader>su", function()
+				possession.update()
+			end)
+			vim.keymap.set("n", "<leader>sd", function()
+				possession.delete()
+			end)
+		end,
+	},
 }
 
 local opts = {}
@@ -680,6 +703,13 @@ vim.g.mapleader = "\\"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.cmd("set clipboard+=unnamedplus") -- ensure yanking to system clipboard
+
+-- Copy/Yank to clipboard based on OS
+if vim.fn.has("macunix") == 1 then
+	vim.opt.clipboard = "unnamed"
+else
+	vim.opt.clipboard = "unnamedplus"
+end
 
 -- get python path from which
 --python_path_exe = system('which python3')

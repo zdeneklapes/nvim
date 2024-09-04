@@ -31,50 +31,27 @@ local plugins = {
 		},
 	},
 
-	-- TODO [FIXME]: package produce error
-	-- {
-	-- 	"rmagatti/auto-session",
-	-- 	config = function()
-	-- 		require("auto-session").setup({
-	-- 			log_level = "error",
-	-- 			auto_session_enabled = true,
-	-- 			auto_session_enable_last_session = true,
-	-- 			auto_session_last_session_dir = vim.fn.stdpath("data") .. "/sessions/",
-	-- 			auto_session_root_dir = vim.fn.stdpath("data") .. "/sessions/",
-	-- 			auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
-	-- 			-- table: Config for handling the DirChangePre and DirChanged autocmds, can be set to nil to disable altogether
-	-- 			cwd_change_handling = {
-	-- 				-- boolean: restore session for upcoming cwd on cwd change
-	-- 				restore_upcoming_session = true,
-	-- 				-- function: This is called after auto_session code runs for the `DirChangedPre` autocmd
-	-- 				pre_cwd_changed_hook = nil,
-	-- 				-- function: This is called after auto_session code runs for the `DirChanged` autocmd
-	-- 				post_cwd_changed_hook = nil,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
-
-	-- {
-	-- 	"rmagatti/session-lens",
-	-- 	requires = {
-	-- 		"rmagatti/auto-session",
-	-- 		"nvim-telescope/telescope.nvim", -- NOTE: needed but mentioned above
-	-- 	},
-	-- 	config = function()
-	-- 		require("session-lens").setup({--[[your custom config--]]
-	-- 		})
-	-- 	end,
-	-- },
-
 	{
-		"folke/todo-comments.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {
-			-- your configuration comes here
-			-- or leave it empty to use the default settings
-			-- refer to the configuration section below
-		},
+		"rmagatti/auto-session",
+		config = function()
+			require("auto-session").setup({
+				log_level = "error",
+				auto_session_enabled = true,
+				auto_session_enable_last_session = true,
+				auto_session_last_session_dir = vim.fn.stdpath("data") .. "/sessions/",
+				auto_session_root_dir = vim.fn.stdpath("data") .. "/sessions/",
+				auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
+				-- table: Config for handling the DirChangePre and DirChanged autocmds, can be set to nil to disable altogether
+				cwd_change_handling = {
+					-- boolean: restore session for upcoming cwd on cwd change
+					restore_upcoming_session = true,
+					-- function: This is called after auto_session code runs for the `DirChangedPre` autocmd
+					pre_cwd_changed_hook = nil,
+					-- function: This is called after auto_session code runs for the `DirChanged` autocmd
+					post_cwd_changed_hook = nil,
+				},
+			})
+		end,
 	},
 
 	{
@@ -101,6 +78,18 @@ local plugins = {
 		},
 		config = function()
 			require("lualine").setup({})
+		end,
+	},
+
+	{
+		"rmagatti/session-lens",
+		requires = {
+			"rmagatti/auto-session",
+			"nvim-telescope/telescope.nvim", -- NOTE: needed but mentioned above
+		},
+		config = function()
+			require("session-lens").setup({--[[your custom config--]]
+			})
 		end,
 	},
 
@@ -141,21 +130,21 @@ local plugins = {
 		"github/copilot.vim",
 	},
 
-	{
-		"zbirenbaum/copilot-cmp",
-		config = function()
-			require("copilot_cmp").setup({
-				sources = {
-					-- Copilot Source
-					{ name = "copilot", group_index = 2 },
-					-- Other Sources
-					{ name = "nvim_lsp", group_index = 2 },
-					{ name = "path", group_index = 2 },
-					{ name = "luasnip", group_index = 2 },
-				},
-			})
-		end,
-	},
+	-- {
+	--   "zbirenbaum/copilot-cmp",
+	--   config = function ()
+	--     require("copilot_cmp").setup({
+	--         sources = {
+	--           -- Copilot Source
+	--           { name = "copilot", group_index = 2 },
+	--           -- Other Sources
+	--           { name = "nvim_lsp", group_index = 2 },
+	--           { name = "path", group_index = 2 },
+	--           { name = "luasnip", group_index = 2 },
+	--         },
+	--     })
+	--   end
+	-- },
 
 	{
 		"nvim-lua/plenary.nvim",
@@ -169,6 +158,10 @@ local plugins = {
 				vim.fn["fzf#install"]()
 			end
 		end,
+	},
+
+	{
+		"rmagatti/session-lens",
 	},
 
 	{
@@ -274,32 +267,32 @@ local plugins = {
 	{
 		"neovim/nvim-lspconfig",
 	},
-	-- { -- Automatically install LSPs to stdpath for neovim
-	-- 	"williamboman/mason.nvim",
-	-- },
-	-- { -- ibid
-	-- 	"williamboman/mason-lspconfig.nvim",
-	-- },
-	-- {
-	-- 	"jay-babu/mason-null-ls.nvim",
-	-- 	config = function()
-	-- 		require("mason-null-ls").setup({
-	-- 			ensure_installed = { "stylua", "jq", "lua" },
-	-- 			automatic_installation = true,
-	-- 		})
-	-- 	end,
-	-- 	event = {
-	-- 		"BufReadPre",
-	-- 		"BufNewFile",
-	-- 	},
-	-- 	dependencies = {
-	-- 		"williamboman/mason.nvim",
-	-- 		"nvimtools/none-ls.nvim",
-	-- 	},
-	-- 	-- config = function()
-	-- 	--     require("your.null-ls.config") -- require your null-ls config here (example below)
-	-- 	-- end,
-	-- },
+	{ -- Automatically install LSPs to stdpath for neovim
+		"williamboman/mason.nvim",
+	},
+	{ -- ibid
+		"williamboman/mason-lspconfig.nvim",
+	},
+	{
+		"jay-babu/mason-null-ls.nvim",
+		config = function()
+			require("mason-null-ls").setup({
+				ensure_installed = { "stylua", "jq", "lua" },
+				automatic_installation = true,
+			})
+		end,
+		event = {
+			"BufReadPre",
+			"BufNewFile",
+		},
+		dependencies = {
+			"williamboman/mason.nvim",
+			"nvimtools/none-ls.nvim",
+		},
+		-- config = function()
+		--     require("your.null-ls.config") -- require your null-ls config here (example below)
+		-- end,
+	},
 	{ -- Lua language server configuration for nvim
 		"folke/neodev.nvim",
 		config = function()
@@ -410,43 +403,43 @@ local plugins = {
 		end,
 	},
 
-	-- {
-	-- 	"WhoIsSethDaniel/mason-tool-installer.nvim",
-	-- 	config = function()
-	-- 		require("mason-tool-installer").setup({
-	-- 			ensure_installed = {
-	-- 				-- you can pin a tool to a particular version
-	-- 				{ "golangci-lint", version = "v1.47.0" },
-	-- 				-- you can turn off/on auto_update per tool
-	-- 				{ "bash-language-server", auto_update = true },
-	-- 				"lua-language-server",
-	-- 				"vim-language-server",
-	-- 				"gopls",
-	-- 				"stylua",
-	-- 				"shellcheck",
-	-- 				"editorconfig-checker",
-	-- 				-- "gofumpt",
-	-- 				-- "golines",
-	-- 				-- "gomodifytags",
-	-- 				-- "gotests",
-	-- 				"impl",
-	-- 				"json-to-struct",
-	-- 				"luacheck",
-	-- 				"misspell",
-	-- 				"revive",
-	-- 				"shellcheck",
-	-- 				"shfmt",
-	-- 				"staticcheck",
-	-- 				"vint",
-	-- 			},
-	-- 			integrations = {
-	-- 				["mason-lspconfig"] = true,
-	-- 				["mason-null-ls"] = true,
-	-- 				["mason-nvim-dap"] = true,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
+	{
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		config = function()
+			require("mason-tool-installer").setup({
+				ensure_installed = {
+					-- you can pin a tool to a particular version
+					{ "golangci-lint", version = "v1.47.0" },
+					-- you can turn off/on auto_update per tool
+					{ "bash-language-server", auto_update = true },
+					"lua-language-server",
+					"vim-language-server",
+					"gopls",
+					"stylua",
+					"shellcheck",
+					"editorconfig-checker",
+					-- "gofumpt",
+					-- "golines",
+					-- "gomodifytags",
+					-- "gotests",
+					"impl",
+					"json-to-struct",
+					"luacheck",
+					"misspell",
+					"revive",
+					"shellcheck",
+					"shfmt",
+					"staticcheck",
+					"vint",
+				},
+				integrations = {
+					["mason-lspconfig"] = true,
+					["mason-null-ls"] = true,
+					["mason-nvim-dap"] = true,
+				},
+			})
+		end,
+	},
 
 	{
 		"lewis6991/gitsigns.nvim",
@@ -477,234 +470,218 @@ local plugins = {
 			end)
 		end,
 	},
-
-	{
-		"ray-x/go.nvim",
-		dependencies = { -- optional packages
-			"ray-x/guihua.lua",
-			"neovim/nvim-lspconfig",
-			"nvim-treesitter/nvim-treesitter",
-		},
-		config = function()
-			require("go").setup()
-		end,
-		event = { "CmdlineEnter" },
-		ft = { "go", "gomod" },
-		build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
-	},
 }
 
 local opts = {}
 require("lazy").setup(plugins, opts)
+-- vim.keymap.set(
+-- 	"n",
+-- 	"<leader>ttt",
+-- 	":Telescope telescope-tabs list_tabs<CR>",
+-- 	{ noremap = true, silent = true, desc = "Telescope telescope-tabs list_tabs" }
+-- )
 
-vim.keymap.set(
-	"n",
-	"<leader>ttt",
-	":Telescope telescope-tabs list_tabs<CR>",
-	{ noremap = true, silent = true, desc = "Telescope telescope-tabs list_tabs" }
-)
+-- local function setup_colorscheme()
+-- All file types tokyonight
+-- vim.api.nvim_command("autocmd BufEnter * colorscheme tokyonight-moon")
+-- yaml or yml set tokyonight-moon
+-- vim.api.nvim_command("autocmd BufEnter *.yaml,*.yml colorscheme tokyonight-moon")
+-- end
+-- setup_colorscheme()
 
-local function setup_colorscheme()
-	-- All file types tokyonight
-	vim.api.nvim_command("autocmd BufEnter * colorscheme tokyonight-moon")
-	-- yaml or yml set tokyonight-moon
-	vim.api.nvim_command("autocmd BufEnter *.yaml,*.yml colorscheme tokyonight-moon")
-end
-setup_colorscheme()
---
--- require("nvim-autopairs").setup()
---
--- require("nvim-treesitter.configs").setup({
--- 	-- modules = {},
--- 	ensure_installed = {
--- 		"c",
--- 		"lua",
--- 		"vim",
--- 		"vimdoc",
--- 		"query",
--- 		"python",
--- 		"json",
--- 		"yaml",
--- 		"html",
--- 		"css",
--- 		"javascript",
--- 		"typescript",
--- 		"tsx",
--- 		"svelte",
--- 		"php",
--- 		"go",
--- 		"rust",
--- 		"graphql",
--- 		"dockerfile",
--- 		"bash",
--- 		"lua",
--- 		"json",
--- 		"yaml",
--- 		"html",
--- 		"css",
--- 		"vim",
--- 		"typescript",
--- 		"javascript",
--- 		"svelte",
--- 		"php",
--- 		"go",
--- 		"rust",
--- 		"graphql",
--- 		"dockerfile",
--- 		"bash",
--- 	},
--- 	-- incremental_selection = {
--- 	--   enable = true,
--- 	--   keymaps = {
--- 	--     init_selection = "<CR>",
--- 	--     node_incremental = "<CR>",
--- 	--     scope_incremental = "<S-CR>",
--- 	--     node_decremental = "<BS>",
--- 	--   },
--- 	-- },
--- 	-- sync_install = false,
--- 	-- auto_install = true,
--- 	-- ignore_install = { "javascript" },
--- 	highlight = {
--- 		enable = true,
--- 		disable = function(_, buf)
--- 			local max_filesize = 100 * 1024 -- 100 KB
--- 			local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
--- 			if ok and stats and stats.size > max_filesize then
--- 				return true
--- 			end
--- 		end,
--- 		additional_vim_regex_highlighting = false,
--- 	},
--- 	--   highlight = {
--- 	--   enable = true,         -- false will disable the whole extension
--- 	--   disable = { "bash" },  -- list of language that will be disabled
--- 	-- },
+require("nvim-autopairs").setup()
+
+require("nvim-treesitter.configs").setup({
+	-- modules = {},
+	ensure_installed = {
+		"c",
+		"lua",
+		"vim",
+		"vimdoc",
+		"query",
+		"python",
+		"json",
+		"yaml",
+		"html",
+		"css",
+		"javascript",
+		"typescript",
+		"tsx",
+		"svelte",
+		"php",
+		"go",
+		"rust",
+		"graphql",
+		"dockerfile",
+		"bash",
+		"lua",
+		"json",
+		"yaml",
+		"html",
+		"css",
+		"vim",
+		"typescript",
+		"javascript",
+		"svelte",
+		"php",
+		"go",
+		"rust",
+		"graphql",
+		"dockerfile",
+		"bash",
+	},
+	-- incremental_selection = {
+	--   enable = true,
+	--   keymaps = {
+	--     init_selection = "<CR>",
+	--     node_incremental = "<CR>",
+	--     scope_incremental = "<S-CR>",
+	--     node_decremental = "<BS>",
+	--   },
+	-- },
+	-- sync_install = false,
+	-- auto_install = true,
+	-- ignore_install = { "javascript" },
+	highlight = {
+		enable = true,
+		disable = function(_, buf)
+			local max_filesize = 100 * 1024 -- 100 KB
+			local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+			if ok and stats and stats.size > max_filesize then
+				return true
+			end
+		end,
+		additional_vim_regex_highlighting = false,
+	},
+	--   highlight = {
+	--   enable = true,         -- false will disable the whole extension
+	--   disable = { "bash" },  -- list of language that will be disabled
+	-- },
+})
+
+vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
+vim.g.loaded_netrwPlugin = 1
+
+require("mason").setup({ log_level = vim.log.lev })
+require("mason").setup({ log_level = vim.log.levels.DEBUG })
+-- local ensure_installed_packages = {
+-- "pyright",
+-- "tsserver",
+-- "lua_ls",
+-- "lua",
+-- "jsonls",
+-- "yamlls",
+-- "bashls",
+-- "dockerls",
+-- "gopls",
+-- "html",
+-- "cssls",
+-- "vimls",
+-- "clangd",
+-- "rust_analyzer",
+-- "jdtls",
+-- "terraformls",
+-- "svelte",
+-- "tailwindcss",
+-- "graphql",
+-- "phpactor",
+-- "intelephense",
+-- "angularls",
+-- "denols",
+-- "solargraph",
+-- "sqlls",
+-- "stylelint_lsp",
+-- "vuels",
+-- "zls",
+-- "hls",
+-- }
+
+local lsp_zero = require("lsp-zero")
+-- require("mason-lspconfig").setup({
+--   ensure_installed = ensure_installed_packages,
+--   automatic_installation = true,
+--   handlers = {
+--     lsp_zero.default_setup,
+--   },
 -- })
---
--- vim.g.loaded_netrw = 1 -- disable netrw at the very start of your init.lua
--- vim.g.loaded_netrwPlugin = 1
---
--- require("mason").setup({ log_level = vim.log.lev })
--- require("mason").setup({ log_level = vim.log.levels.DEBUG })
--- -- local ensure_installed_packages = {
--- -- "pyright",
--- -- "tsserver",
--- -- "lua_ls",
--- -- "lua",
--- -- "jsonls",
--- -- "yamlls",
--- -- "bashls",
--- -- "dockerls",
--- -- "gopls",
--- -- "html",
--- -- "cssls",
--- -- "vimls",
--- -- "clangd",
--- -- "rust_analyzer",
--- -- "jdtls",
--- -- "terraformls",
--- -- "svelte",
--- -- "tailwindcss",
--- -- "graphql",
--- -- "phpactor",
--- -- "intelephense",
--- -- "angularls",
--- -- "denols",
--- -- "solargraph",
--- -- "sqlls",
--- -- "stylelint_lsp",
--- -- "vuels",
--- -- "zls",
--- -- "hls",
--- -- }
---
--- local lsp_zero = require("lsp-zero")
--- -- require("mason-lspconfig").setup({
--- --   ensure_installed = ensure_installed_packages,
--- --   automatic_installation = true,
--- --   handlers = {
--- --     lsp_zero.default_setup,
--- --   },
--- -- })
---
--- -- lspconfig setup for the language servers
--- -- NOTE: setup{} or setup({}) has to be used instead of setup() as it is a function call
+
+-- lspconfig setup for the language servers
+-- NOTE: setup{} or setup({}) has to be used instead of setup() as it is a function call
+lsp_zero.on_attach(function(_, bufnr)
+	-- see :help lsp-zero-keybindings
+	-- to learn the available actions
+	lsp_zero.default_keymaps({ buffer = bufnr })
+	vim.keymap.set("n", "<leader>lbdf", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true, desc = "Goto Definition" })
+	vim.keymap.set("n", "<leader>lbdc", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true, desc = "Goto Declaration" })
+	vim.keymap.set("n", "<leader>lbrf", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true, desc = "Goto References" })
+	vim.keymap.set("n", "<leader>lbrn", "<cmd>lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true, desc = "Rename" })
+	vim.keymap.set("n", "<leader>lbhh", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true, desc = "Hover" })
+	vim.keymap.set("n", "<leader>lbca", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true, desc = "Code Action" })
+	vim.keymap.set("n", "<leader>lbsh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { noremap = true, silent = true, desc = "Signature Help" })
+	vim.keymap.set("n", "<leader>lbtd", "<cmd>lua vim.lsp.buf.type_definition()<CR>", { noremap = true, silent = true, desc = "Type Definition" })
+end)
 -- lsp_zero.on_attach(function(_, bufnr)
 -- 	-- see :help lsp-zero-keybindings
 -- 	-- to learn the available actions
 -- 	lsp_zero.default_keymaps({ buffer = bufnr })
--- 	vim.keymap.set("n", "<leader>lbdf", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true, desc = "Goto Definition" })
--- 	vim.keymap.set("n", "<leader>lbdc", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true, desc = "Goto Declaration" })
--- 	vim.keymap.set("n", "<leader>lbrf", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true, desc = "Goto References" })
--- 	vim.keymap.set("n", "<leader>lbrn", "<cmd>lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true, desc = "Rename" })
--- 	vim.keymap.set("n", "<leader>lbhh", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true, desc = "Hover" })
--- 	vim.keymap.set("n", "<leader>lbca", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true, desc = "Code Action" })
--- 	vim.keymap.set("n", "<leader>lbsh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { noremap = true, silent = true, desc = "Signature Help" })
--- 	vim.keymap.set("n", "<leader>lbtd", "<cmd>lua vim.lsp.buf.type_definition()<CR>", { noremap = true, silent = true, desc = "Type Definition" })
 -- end)
--- -- lsp_zero.on_attach(function(_, bufnr)
--- -- 	-- see :help lsp-zero-keybindings
--- -- 	-- to learn the available actions
--- -- 	lsp_zero.default_keymaps({ buffer = bufnr })
--- -- end)
---
--- local lspconfig = require("lspconfig")
--- lspconfig["lua_ls"].setup({
--- 	settings = {
--- 		Lua = {
--- 			diagnostics = {
--- 				globals = { "vim" },
--- 			},
--- 		},
--- 	},
--- })
---
--- -- Load the language servers
--- -- local pkgs = ensure_installed_packages
--- -- for i, lang in ipairs(pkgs) do
--- --   if lang == "lua_ls" then
--- --     table.remove(pkgs, i)
--- --   end
--- -- end
--- -- for _, lang in ipairs(ensure_installed_packages) do
--- --   lspconfig[lang].setup({})
--- -- end
---
--- local cmp = require("cmp")
--- cmp.setup({
--- 	-- mapping = cmp.mapping.preset.insert({
--- 	-- 	["<Tab>"] = cmp.mapping.confirm({ select = true }),
--- 	-- }),
--- 	mapping = {
--- 		["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
--- 		["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
--- 		["<C-d>"] = cmp.mapping.scroll_docs(-4),
--- 		["<C-f>"] = cmp.mapping.scroll_docs(4),
--- 		["<C-Space>"] = cmp.mapping.complete(),
--- 		["<C-e>"] = cmp.mapping.close(),
--- 		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Must be here otherwise it will not work and error: 5108 and 5100
--- 	},
--- 	sources = {
--- 		{ name = "nvim_lsp" },
--- 		{ name = "buffer" },
--- 		{ name = "path" },
--- 		-- { name = 'cmdline' },
--- 	},
--- })
--- cmp.setup.cmdline(":", {
--- 	mapping = cmp.mapping.preset.cmdline(),
--- 	sources = cmp.config.sources({
--- 		{ name = "path" },
--- 	}, {
--- 		{
--- 			name = "cmdline",
--- 			option = {
--- 				ignore_cmds = { "Man", "!" },
--- 			},
--- 		},
--- 	}),
--- })
+
+local lspconfig = require("lspconfig")
+lspconfig["lua_ls"].setup({
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+			},
+		},
+	},
+})
+
+-- Load the language servers
+-- local pkgs = ensure_installed_packages
+-- for i, lang in ipairs(pkgs) do
+--   if lang == "lua_ls" then
+--     table.remove(pkgs, i)
+--   end
+-- end
+-- for _, lang in ipairs(ensure_installed_packages) do
+--   lspconfig[lang].setup({})
+-- end
+
+local cmp = require("cmp")
+cmp.setup({
+	-- mapping = cmp.mapping.preset.insert({
+	-- 	["<Tab>"] = cmp.mapping.confirm({ select = true }),
+	-- }),
+	mapping = {
+		["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+		["<C-d>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-e>"] = cmp.mapping.close(),
+		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Must be here otherwise it will not work and error: 5108 and 5100
+	},
+	sources = {
+		{ name = "nvim_lsp" },
+		{ name = "buffer" },
+		{ name = "path" },
+		-- { name = 'cmdline' },
+	},
+})
+cmp.setup.cmdline(":", {
+	mapping = cmp.mapping.preset.cmdline(),
+	sources = cmp.config.sources({
+		{ name = "path" },
+	}, {
+		{
+			name = "cmdline",
+			option = {
+				ignore_cmds = { "Man", "!" },
+			},
+		},
+	}),
+})
 
 -- configuration
 vim.cmd("autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab")
@@ -766,6 +743,15 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- Remove Traling whitespace
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+	pattern = { "*" },
+	command = [[%s/\s\+$//e]],
+})
+
+-- Horizontal split resize
+vim.keymap.set("n", "<leader>+", [[<C-w>+]], { desc = "Increase horizontal split size" })
+vim.keymap.set("n", "<leader>-", [[<C-w>-]], { desc = "Decrease horizontal split size" })
+
 -- Define the function to remove the quickfix item
 RemoveQFItem = function() -- luacheck: ignore
 	local curqfidx = vim.fn.line(".") - 1
@@ -788,14 +774,4 @@ vim.cmd([[
 ]])
 
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
-
--- vim.api.nvim_command("colorscheme tokyonight-moon")
-
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-	pattern = { "*" },
-	command = [[%s/\s\+$//e]],
-})
-
--- Horizontal split resize
-vim.keymap.set("n", "<leader>+", [[<C-w>+]], { desc = "Increase horizontal split size" })
-vim.keymap.set("n", "<leader>-", [[<C-w>-]], { desc = "Decrease horizontal split size" })
+vim.api.nvim_command("colorscheme tokyonight-moon")

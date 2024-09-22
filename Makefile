@@ -1,0 +1,2 @@
+lint:
+	stylua init.lua

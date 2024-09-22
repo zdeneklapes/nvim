@@ -64,6 +64,9 @@ local MASON = {
 
 		-- Shell
 		"shfmt",
+
+    -- XML
+    "xmlformatter"
 	},
 	linters = {
 		-- Shell
@@ -337,6 +340,31 @@ require("lazy").setup({
 
 	{
 		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		config = function()
+			local configs = require("nvim-treesitter.configs")
+
+			configs.setup({
+				ensure_installed = {
+					"jsonc",
+					"yaml",
+					"javascript",
+					"typescript",
+					"html",
+					"css",
+					"lua",
+					"python",
+					"rust",
+					"bash",
+					"dockerfile",
+					"go",
+					"graphql",
+				},
+				sync_install = false,
+				highlight = { enable = true },
+				indent = { enable = true },
+			})
+		end,
 	},
 
 	{
@@ -344,13 +372,13 @@ require("lazy").setup({
 		event = "BufRead",
 		opts = {},
 	},
+
 	{
 		"folke/tokyonight.nvim",
 		lazy = false,
 		priority = 1000,
 		opts = {},
 	},
-	{},
 
 	{ -- Automatically install LSPs to stdpath for neovim
 		"williamboman/mason.nvim",
@@ -386,6 +414,10 @@ require("lazy").setup({
 	},
 
 	{
+		"jamestthompson3/nvim-remote-containers",
+	},
+
+	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = {},
 		config = function(_, opts)
@@ -396,8 +428,79 @@ require("lazy").setup({
 	{
 		"nvim/nvim-lspconfig",
 		config = function(_, _)
+			vim.lsp.handlers["textDocument/publishDiagnostics"] =
+				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+					virtual_text = false,
+					update_in_insert = false,
+				})
+
 			local lspconfig = require("lspconfig")
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+			local on_attach = function(client, bufnr)
+				vim.keymap.set(
+					"n",
+					"<leader>lbdf",
+					"<cmd>lua vim.lsp.buf.definition()<CR>",
+					{ noremap = true, silent = true, desc = "Goto Definition" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbdc",
+					"<cmd>lua vim.lsp.buf.declaration()<CR>",
+					{ noremap = true, silent = true, desc = "Goto Declaration" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbrf",
+					"<cmd>lua vim.lsp.buf.references()<CR>",
+					{ noremap = true, silent = true, desc = "Goto References" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbrn",
+					"<cmd>lua vim.lsp.buf.rename()<CR>",
+					{ noremap = true, silent = true, desc = "Rename" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbhh",
+					"<cmd>lua vim.lsp.buf.hover()<CR>",
+					{ noremap = true, silent = true, desc = "Hover" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbca",
+					"<cmd>lua vim.lsp.buf.code_action()<CR>",
+					{ noremap = true, silent = true, desc = "Code Action" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbsh",
+					"<cmd>lua vim.lsp.buf.signature_help()<CR>",
+					{ noremap = true, silent = true, desc = "Signature Help" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>lbtd",
+					"<cmd>lua vim.lsp.buf.type_definition()<CR>",
+					{ noremap = true, silent = true, desc = "Type Definition" }
+				)
+			end
+
+			lspconfig["angularls"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
+				root_dir = lspconfig.util.root_pattern("angular.json"),
+			})
+			lspconfig["ansiblels"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
+				root_dir = lspconfig.util.root_pattern("ansible.cfg"),
+			})
 			lspconfig["lua_ls"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
 				settings = {
 					Lua = {
 						diagnostics = {
@@ -406,55 +509,6 @@ require("lazy").setup({
 					},
 				},
 			})
-
-			vim.keymap.set(
-				"n",
-				"<leader>lbdf",
-				"<cmd>lua vim.lsp.buf.definition()<CR>",
-				{ noremap = true, silent = true, desc = "Goto Definition" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbdc",
-				"<cmd>lua vim.lsp.buf.declaration()<CR>",
-				{ noremap = true, silent = true, desc = "Goto Declaration" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbrf",
-				"<cmd>lua vim.lsp.buf.references()<CR>",
-				{ noremap = true, silent = true, desc = "Goto References" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbrn",
-				"<cmd>lua vim.lsp.buf.rename()<CR>",
-				{ noremap = true, silent = true, desc = "Rename" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbhh",
-				"<cmd>lua vim.lsp.buf.hover()<CR>",
-				{ noremap = true, silent = true, desc = "Hover" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbca",
-				"<cmd>lua vim.lsp.buf.code_action()<CR>",
-				{ noremap = true, silent = true, desc = "Code Action" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbsh",
-				"<cmd>lua vim.lsp.buf.signature_help()<CR>",
-				{ noremap = true, silent = true, desc = "Signature Help" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>lbtd",
-				"<cmd>lua vim.lsp.buf.type_definition()<CR>",
-				{ noremap = true, silent = true, desc = "Type Definition" }
-			)
 		end,
 	},
 
@@ -530,7 +584,6 @@ require("lazy").setup({
 
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
-		-- "hrsh7th/nvim-compe",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"L3MON4D3/LuaSnip",
@@ -550,7 +603,7 @@ require("lazy").setup({
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.close(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }), -- Must be here otherwise it will not work and error: 5108 and 5100
+					["<CR>"] = cmp.mapping.confirm({ select = false }), -- NOTE: select = false, ensure that the first completion is not auto selected
 				}),
 				sources = {
 					{ name = "nvim_lsp" },
@@ -585,6 +638,38 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons",
 		},
 		opts = {},
+		keys = {
+			{
+				"<leader>xx",
+				"<cmd>Trouble diagnostics focus<cr>",
+				desc = "Diagnostics (Trouble)",
+			},
+			{
+				"<leader>xX",
+				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+				desc = "Buffer Diagnostics (Trouble)",
+			},
+			{
+				"<leader>cs",
+				"<cmd>Trouble symbols toggle focus=false<cr>",
+				desc = "Symbols (Trouble)",
+			},
+			{
+				"<leader>cl",
+				"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+				desc = "LSP Definitions / references / ... (Trouble)",
+			},
+			{
+				"<leader>xL",
+				"<cmd>Trouble loclist toggle<cr>",
+				desc = "Location List (Trouble)",
+			},
+			{
+				"<leader>xQ",
+				"<cmd>Trouble qflist toggle<cr>",
+				desc = "Quickfix List (Trouble)",
+			},
+		},
 	},
 
 	{
@@ -610,44 +695,6 @@ require("lazy").setup({
 	{
 		"dyng/ctrlsf.vim",
 	},
-
-	-- {
-	-- 	"WhoIsSethDaniel/mason-tool-installer.nvim",
-	-- 	config = function()
-	-- 		require("mason-tool-installer").setup({
-	-- 			ensure_installed = {
-	-- 				-- you can pin a tool to a particular version
-	-- 				{ "golangci-lint", version = "v1.47.0" },
-	-- 				-- you can turn off/on auto_update per tool
-	-- 				{ "bash-language-server", auto_update = true },
-	-- 				"lua-language-server",
-	-- 				"vim-language-server",
-	-- 				"gopls",
-	-- 				"stylua",
-	-- 				"shellcheck",
-	-- 				"editorconfig-checker",
-	-- 				-- "gofumpt",
-	-- 				-- "golines",
-	-- 				-- "gomodifytags",
-	-- 				-- "gotests",
-	-- 				"impl",
-	-- 				"json-to-struct",
-	-- 				"luacheck",
-	-- 				"misspell",
-	-- 				"revive",
-	-- 				"shellcheck",
-	-- 				"shfmt",
-	-- 				"staticcheck",
-	-- 				"vint",
-	-- 			},
-	-- 			integrations = {
-	-- 				["mason-lspconfig"] = true,
-	-- 				["mason-null-ls"] = true,
-	-- 				["mason-nvim-dap"] = true,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
 
 	{
 		"lewis6991/gitsigns.nvim",
@@ -724,23 +771,7 @@ setup_colorscheme()
 -- -- "zls",
 -- -- "hls",
 -- -- }
---
--- -- lspconfig setup for the language servers
--- -- NOTE: setup{} or setup({}) has to be used instead of setup() as it is a function call
--- lsp_zero.on_attach(function(_, bufnr)
--- 	-- see :help lsp-zero-keybindings
--- 	-- to learn the available actions
--- 	lsp_zero.default_keymaps({ buffer = bufnr })
--- 	vim.keymap.set("n", "<leader>lbdf", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true, desc = "Goto Definition" })
--- 	vim.keymap.set("n", "<leader>lbdc", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true, desc = "Goto Declaration" })
--- 	vim.keymap.set("n", "<leader>lbrf", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true, desc = "Goto References" })
--- 	vim.keymap.set("n", "<leader>lbrn", "<cmd>lua vim.lsp.buf.rename()<CR>", { noremap = true, silent = true, desc = "Rename" })
--- 	vim.keymap.set("n", "<leader>lbhh", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true, desc = "Hover" })
--- 	vim.keymap.set("n", "<leader>lbca", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true, desc = "Code Action" })
--- 	vim.keymap.set("n", "<leader>lbsh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { noremap = true, silent = true, desc = "Signature Help" })
--- 	vim.keymap.set("n", "<leader>lbtd", "<cmd>lua vim.lsp.buf.type_definition()<CR>", { noremap = true, silent = true, desc = "Type Definition" })
--- end)
---
+
 -- Vim Configuration
 vim.cmd("autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab")
 vim.cmd("set expandtab")
@@ -771,14 +802,6 @@ else
 	vim.opt.clipboard = "unnamedplus"
 end
 
--- get python path from which
---python_path_exe = system('which python3')
---vim.cmd("let g:python3_host_prog = )")
-
--- set no wrapping based on file type
--- vim.cmd([[
---     autocmd FileType help setlocal nowrap
--- ]])
 vim.opt.wrap = false
 
 -- Neovim for Python and Node.js installed successfully!

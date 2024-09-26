@@ -1,6 +1,13 @@
 -- luacheck: ignore vim
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+package.path = package.path .. ";" .. vim.fn.stdpath("config") .. "/?.lua"
+local inspect = require("./inspect")
+
+-- print("hello")
+-- print(package.path)
+-- print(vim.fn.stdpath("config"))
+
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -20,6 +27,7 @@ local MASON = {
 
 		-- Python
 		"pyright",
+		"python-lsp-server",
 
 		-- Rust
 		"rust_analyzer",
@@ -27,6 +35,7 @@ local MASON = {
 		-- JavaScript, TypeScript
 		"typescript-language-server",
 		"eslint",
+		"angular-language-server",
 
 		-- Shell
 		"bashls",
@@ -65,8 +74,8 @@ local MASON = {
 		-- Shell
 		"shfmt",
 
-    -- XML
-    "xmlformatter"
+		-- XML
+		"xmlformatter",
 	},
 	linters = {
 		-- Shell
@@ -367,6 +376,10 @@ require("lazy").setup({
 		end,
 	},
 
+  {
+    "pearofducks/ansible-vim",
+  },
+
 	{
 		"nvimdev/hlsearch.nvim",
 		event = "BufRead",
@@ -395,21 +408,23 @@ require("lazy").setup({
 
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		opts = {
-			ensure_installed = {
-				unpack(MASON.formatters),
-				unpack(MASON.lsp),
-				unpack(MASON.linters),
-			},
-			run_on_start = true,
-			integrations = {
-				["mason-lspconfig"] = true,
-			},
-		},
-		config = function(_, opts)
+		config = function(_, _)
+			local opts = {
+				ensure_installed = {},
+				run_on_start = true,
+				integrations = {
+					["mason-lspconfig"] = true,
+				},
+			}
+			vim.list_extend(opts["ensure_installed"], MASON["lsp"])
+			vim.list_extend(opts["ensure_installed"], MASON["formatters"])
+			vim.list_extend(opts["ensure_installed"], MASON["linters"])
+			-- print(inspect(MASON["lsp"]))
+			-- print(inspect(MASON["formatters"]))
+			-- print(inspect(unpack(MASON["formatters"])))
+			-- print(inspect(MASON["linters"]))
+			-- print(inspect(unpack(MASON["linters"])))
 			require("mason-tool-installer").setup(opts)
-			-- print opts to cli
-			-- print(vim.inspect(opts))
 		end,
 	},
 
@@ -437,7 +452,7 @@ require("lazy").setup({
 			local lspconfig = require("lspconfig")
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			local on_attach = function(client, bufnr)
+			local on_attach = function(_, _)
 				vim.keymap.set(
 					"n",
 					"<leader>lbdf",
@@ -496,7 +511,35 @@ require("lazy").setup({
 			lspconfig["ansiblels"].setup({
 				capabilities = capabilities,
 				on_attach = on_attach,
-				root_dir = lspconfig.util.root_pattern("ansible.cfg"),
+				filetypes = {
+					"yaml.ansible",
+				},
+				settings = {
+					ansible = {
+						ansible = {
+							path = "ansible",
+							useFullyQualifiedCollectionNames = true,
+						},
+						ansibleLint = {
+							enabled = true,
+							path = "ansible-lint",
+						},
+						executionEnvironment = {
+							enabled = false,
+						},
+						python = {
+							interpreterPath = "python",
+						},
+						completion = {
+							provideRedirectModules = true,
+							provideModuleOptionAliases = true,
+						},
+					},
+				},
+			})
+			lspconfig["jsonls"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
 			})
 			lspconfig["lua_ls"].setup({
 				capabilities = capabilities,
@@ -508,6 +551,14 @@ require("lazy").setup({
 						},
 					},
 				},
+			})
+			lspconfig["pylsp"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
+			})
+			lspconfig["bashls"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
 			})
 		end,
 	},
@@ -521,6 +572,7 @@ require("lazy").setup({
 				rust = { "rustfmt", lsp_format = "fallback" },
 				javascript = { "prettierd", "prettier", stop_after_first = true },
 				typescript = { "prettierd", "prettier", stop_after_first = true },
+				bash = { "shfmt" },
 			},
 		},
 		config = function(_, opts)
@@ -646,7 +698,7 @@ require("lazy").setup({
 			},
 			{
 				"<leader>xX",
-				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+				"<cmd>Trouble diagnotics toggle<cr>",
 				desc = "Buffer Diagnostics (Trouble)",
 			},
 			{

@@ -433,6 +433,18 @@ require("lazy").setup({
 	},
 
 	{
+		"gabrielpoca/replacer.nvim",
+		config = function(_, _)
+			require("replacer").setup()
+			vim.keymap.set("n", "<leader>r", '<cmd>lua require("replacer").run()<CR>', {
+        noremap = true,
+				silent = true,
+				desc = "Replace",
+			})
+		end,
+	},
+
+	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = {},
 		config = function(_, opts)

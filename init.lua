@@ -376,9 +376,9 @@ require("lazy").setup({
 		end,
 	},
 
-  {
-    "pearofducks/ansible-vim",
-  },
+	{
+		"pearofducks/ansible-vim",
+	},
 
 	{
 		"nvimdev/hlsearch.nvim",
@@ -617,9 +617,15 @@ require("lazy").setup({
 				bash = { "shellcheck" },
 			}
 			-- local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-			vim.keymap.set("n", "<leader>cl", function()
-				lint.try_lint()
-			end, { desc = "Lint" })
+			-- vim.keymap.set("n", "<leader>cl", function()
+			-- 	lint.try_lint()
+			-- end, { desc = "Lint" })
+
+			vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+				callback = function()
+					require("lint").try_lint()
+				end,
+			})
 			-- vim.api.nvim_create_autocmd({ "InsertLeave" }, {
 			-- 	group = lint_augroup,
 			-- 	callback = function()
@@ -693,7 +699,7 @@ require("lazy").setup({
 		keys = {
 			{
 				"<leader>xx",
-				"<cmd>Trouble diagnostics focus<cr>",
+				"<cmd>Trouble diagnostics toggle focus=true<cr>",
 				desc = "Diagnostics (Trouble)",
 			},
 			{
@@ -705,11 +711,6 @@ require("lazy").setup({
 				"<leader>cs",
 				"<cmd>Trouble symbols toggle focus=false<cr>",
 				desc = "Symbols (Trouble)",
-			},
-			{
-				"<leader>cl",
-				"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-				desc = "LSP Definitions / references / ... (Trouble)",
 			},
 			{
 				"<leader>xL",

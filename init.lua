@@ -55,6 +55,9 @@ local MASON = {
 
 		-- Ansible
 		"ansiblels",
+
+		-- Terraform
+		"terraformls",
 	},
 	formatters = {
 		-- Lua
@@ -80,6 +83,9 @@ local MASON = {
 	linters = {
 		-- Shell
 		"shellcheck",
+
+    -- Terraform
+    "tflint",
 	},
 }
 
@@ -368,6 +374,8 @@ require("lazy").setup({
 					"dockerfile",
 					"go",
 					"graphql",
+					"hcl",
+					"terraform",
 				},
 				sync_install = false,
 				highlight = { enable = true },
@@ -437,7 +445,7 @@ require("lazy").setup({
 		config = function(_, _)
 			require("replacer").setup()
 			vim.keymap.set("n", "<leader>r", '<cmd>lua require("replacer").run()<CR>', {
-        noremap = true,
+				noremap = true,
 				silent = true,
 				desc = "Replace",
 			})
@@ -572,6 +580,10 @@ require("lazy").setup({
 				capabilities = capabilities,
 				on_attach = on_attach,
 			})
+			lspconfig["terraformls"].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
+			})
 		end,
 	},
 
@@ -627,6 +639,7 @@ require("lazy").setup({
 				graphql = { "graphql" },
 				dockerfile = { "hadolint" },
 				bash = { "shellcheck" },
+        terraform = { "tflint" },
 			}
 			-- local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 			-- vim.keymap.set("n", "<leader>cl", function()

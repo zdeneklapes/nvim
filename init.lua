@@ -84,8 +84,8 @@ local MASON = {
 		-- Shell
 		"shellcheck",
 
-    -- Terraform
-    "tflint",
+		-- Terraform
+		"tflint",
 	},
 }
 
@@ -441,6 +441,18 @@ require("lazy").setup({
 	},
 
 	{
+		"startup-nvim/startup.nvim",
+		dependencies = {
+			"nvim-telescope/telescope.nvim",
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope-file-browser.nvim",
+		},
+		config = function()
+			require("startup").setup()
+		end,
+	},
+
+	{
 		"gabrielpoca/replacer.nvim",
 		config = function(_, _)
 			require("replacer").setup()
@@ -639,7 +651,7 @@ require("lazy").setup({
 				graphql = { "graphql" },
 				dockerfile = { "hadolint" },
 				bash = { "shellcheck" },
-        terraform = { "tflint" },
+				terraform = { "tflint" },
 			}
 			-- local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 			-- vim.keymap.set("n", "<leader>cl", function()

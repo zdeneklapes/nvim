@@ -345,6 +345,7 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>tts", builtin.treesitter, { desc = "Telescope treesitter" })
 			vim.keymap.set("n", "<leader>tdd", builtin.diagnostics, { desc = "Telescope diagnostics" })
 			vim.keymap.set("n", "<leader>tjj", builtin.jumplist, { desc = "Telescope jumplist" })
+			vim.keymap.set("n", "<leader>tmm", ":Telescope marks<CR>", { desc = "Telescope marks" })
 			vim.keymap.set("n", "<leader>ttt", ":Telescope telescope-tabs list_tabs<CR>", {
 				noremap = true,
 				silent = true,

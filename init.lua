@@ -171,6 +171,18 @@ require("lazy").setup({
 		config = function(_, opts)
 			require("nvim-tree").setup(opts)
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true, desc = "Toggle NvimTree" })
+			vim.api.nvim_create_autocmd({ "VimResized" }, {
+				desc = "Resize nvim-tree if nvim window got resized",
+
+				group = vim.api.nvim_create_augroup("NvimTreeResize", { clear = true }),
+				callback = function()
+					local percentage = 15
+
+					local ratio = percentage / 100
+					local width = math.floor(vim.go.columns * ratio)
+					vim.cmd("tabdo NvimTreeResize " .. width)
+				end,
+			})
 		end,
 	},
 
@@ -351,6 +363,17 @@ require("lazy").setup({
 				silent = true,
 				desc = "Telescope telescope-tabs list_tabs",
 			})
+      -- Do this using lua vim zy:Telescope live_grep default_text=<C-r>z<cr> for vnoremap
+      -- vim.keymap.set("v", "<leader>tlgv", "<esc>:Telescope live_grep<space>default_text=<C-r>z<cr>", {
+      --   noremap = true,
+      --   silent = true,
+      --   desc = "Telescope live_grep",
+      -- })
+      vim.api.nvim_set_keymap('v', '<C-f>', 'y<ESC>:Telescope live_grep default_text=<c-r>0<CR>', {
+        noremap = true,
+        silent = true,
+        desc = "Telescope live_grep with selected text",
+      })
 		end,
 	},
 
